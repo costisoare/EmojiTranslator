@@ -1,8 +1,8 @@
-alt*.PNG
-*/*.pptx
-*/*.docx
-*/Research
-*/UsefulLogos
+**/alt*.PNG
+**/*.pptx
+**/*.docx
+**/Research
+**/UsefulLogos
 */venv
-*/.idea
-*/__pycache__
+**/.idea
+**/__pycache__
