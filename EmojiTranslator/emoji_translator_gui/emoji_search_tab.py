@@ -1,0 +1,70 @@
+from emoji_translator_utils.emoji_dict_utils import *
+from emoji_translator_gui.emoji_gui_utils import *
+
+class EmojiSearchTab(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        self.SetBackgroundColour((255, 253, 208))
+
+        self.main_sizer = wx.GridSizer(2, 1, 0, 0)
+
+        self.up_sizer = wx.FlexGridSizer(3, 1, 0, 0)
+        self.up_sizer.AddGrowableCol(0)
+        self.down_sizer = wx.GridSizer(1, 2, 0, 0)
+
+        self.user_input = wx.ComboCtrl(self)
+        self.user_input.SetPopupControl(EmojiSearchComboPopup())
+        self.user_input.GetPopupControl().list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnDescClick)
+        self.user_input.SetFont(wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
+
+        self.up_sizer.AddSpacer(50)
+        self.up_sizer.Add(self.user_input, 1, wx.EXPAND)
+
+        self.tts_button = wx.Button(self, 0, "Text To Speech")
+        self.tts_button.Bind(wx.EVT_BUTTON, self.OnTTS)
+        self.tts_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.down_sizer.Add(self.tts_button, 1, wx.ALIGN_CENTER)
+        self.tts_button.Show(False)
+
+        self.main_sizer.Add(self.up_sizer, 1, wx.EXPAND)
+        self.main_sizer.Add(self.down_sizer, 1, wx.EXPAND)
+
+        self.SetSizer(self.main_sizer)
+
+        import pyttsx3
+        self.tts_engine = pyttsx3.init()
+        self.tts_engine.setProperty('rate', self.tts_engine.getProperty('rate') - 80)
+
+    def OnInputChanged(self, event):
+        current_input = self.user_input.GetValue()
+
+        matches = get_matched_list(current_input)
+        self.user_input.GetPopupControl().RemoveItems()
+        self.user_input.GetPopupControl().AddItems(matches)
+
+    def OnDescClick(self, event):
+        desc = event.GetText()
+
+        if hasattr(self, "emoji_symbol"):
+            self.emoji_symbol.bitmap.Destroy()
+            del self.emoji_symbol
+
+        try:
+            init_emoji = wx.Image(unicode_to_filename(EMOJI_UNICODE[desc], 128))
+        except KeyError:
+            init_emoji = wx.Image(unicode_to_filename(EMOJI_ALIAS_UNICODE[desc], 128))
+        self.emoji_symbol = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
+                                        desc)
+        self.down_sizer.Add(self.emoji_symbol.bitmap, 1, wx.ALIGN_CENTER)
+
+        self.tts_button.Show(hasattr(self, "emoji_symbol") or hasattr(self, "out_text"))
+        self.Layout()
+
+    def OnTTS(self, event):
+        if hasattr(self, "emoji_symbol"):
+            self.tts_engine.say(self.emoji_symbol.emoji_desc)
+        else:
+            self.tts_engine.say(self.out_text.GetLabel())
+        self.tts_engine.runAndWait()

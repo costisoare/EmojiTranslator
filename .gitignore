@@ -1,0 +1,8 @@
+alt*.PNG
+*/*.pptx
+*/*.docx
+*/Research
+*/UsefulLogos
+*/venv
+*/.idea
+*/__pycache__
