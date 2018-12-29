@@ -36,10 +36,20 @@ class RegisterPanel(LoginPanelBase):
         self.register_btn.Bind(wx.EVT_BUTTON, self.OnRegister)
         self.login_btn.Hide()
 
+        self.pass_guideline = wx.StaticText(self, label="Password must:\n"
+                                                        "- Be at least 6 characters long\n"
+                                                        "- Contain at least a digit (0-9)\n"
+                                                        "- Contain at least a letter (a-z, A-Z)")
+        self.main_sizer.Add(self.pass_guideline, 0, wx.ALL | wx.CENTER, 5)
+        self.Layout()
+
     def OnRegister(self, event):
         if len(self.user.GetValue()) == 0 or len(self.password.GetValue()) == 0:
             self.result.SetForegroundColour((255, 0, 0))
             self.result.SetLabel("Username and Password must NOT be empty!")
+        elif not self.is_pass_valid(self.password.GetValue()):
+            self.result.SetForegroundColour((255, 0, 0))
+            self.result.SetLabel("Password is not strong enough.")
         elif keyring.get_password("emojiapp", self.user.GetValue()) is not None:
             self.result.SetForegroundColour((255, 0, 0))
             self.result.SetLabel("Username already in use!")

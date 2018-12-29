@@ -4,6 +4,8 @@ class LoginPanelBase(wx.Frame):
     def __init__(self, title):
         wx.Frame.__init__(self, None, title=title)
 
+        current_size = self.GetSize()
+        self.SetSize((current_size.GetWidth() * 1.2, current_size.GetHeight()))
         self.SetBackgroundColour((255, 253, 208))
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
@@ -35,6 +37,16 @@ class LoginPanelBase(wx.Frame):
 
         self.SetSizer(self.main_sizer)
         self.Show()
+
+    def is_pass_valid(self, password):
+        has_letter = False
+        has_digit = False
+        for char in password:
+            has_digit = char.isdigit()
+            has_letter = char.isalpha()
+
+        return (len(password) >= 6 and has_digit and has_letter)
+
 
     def OnRegister(self, event):
         pass
