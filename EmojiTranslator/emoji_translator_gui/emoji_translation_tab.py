@@ -27,7 +27,8 @@ class EmojiTranslationTab(wx.Panel):
         self.user_input.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
 
-        swap_bmp = wx.Bitmap(os.getcwd() + "\swap.png").ConvertToImage().Scale(32, 32, wx.IMAGE_QUALITY_HIGH)
+        swap_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'swap.png')
+        swap_bmp = wx.Bitmap(swap_bmp_file).ConvertToImage().Scale(32, 32, wx.IMAGE_QUALITY_HIGH)
         self.swap_button = wx.BitmapButton(self, bitmap=wx.Bitmap(swap_bmp), style=wx.BORDER_NONE)
         self.swap_button.Bind(wx.EVT_BUTTON, self.OnSwapTranslate)
         self.swap_button.Bind(wx.EVT_MOTION, self.OnSwapMouseMotion)

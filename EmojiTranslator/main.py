@@ -14,22 +14,25 @@ class MainWindow(wx.Frame):
         self.sizer.AddGrowableCol(1, 80)
 
         self.buttons_panel = wx.Panel(self)
-        self.buttons_sizer = wx.GridSizer(4, 1, 0, 0)
-        self.buttons_sizer.AddSpacer(30)
+        self.buttons_sizer = wx.BoxSizer(wx.VERTICAL)
         self.buttons_panel.SetFont(wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
-        self.search_button = wx.ToggleButton(self.buttons_panel, label='Search', style=wx.BORDER_NONE)
-        self.db_button = wx.ToggleButton(self.buttons_panel, label='Database', style=wx.BORDER_NONE)
-        self.translate_button = wx.ToggleButton(self.buttons_panel, label='Translate', style=wx.BORDER_NONE)
+        self.search_button = wx.ToggleButton(self.buttons_panel, label='Search')
+        self.db_button = wx.ToggleButton(self.buttons_panel, label='Database')
+        self.translate_button = wx.ToggleButton(self.buttons_panel, label='Translate')
         self.options_button_list = list([self.search_button, self.db_button, self.translate_button])
 
         for button in self.options_button_list:
             button.SetBackgroundColour(self.buttons_panel.GetBackgroundColour())
             button.Bind(wx.EVT_TOGGLEBUTTON, self.OnNewPress)
 
-        self.buttons_sizer.Add(self.search_button)
-        self.buttons_sizer.Add(self.db_button)
-        self.buttons_sizer.Add(self.translate_button)
+        self.buttons_sizer.AddSpacer(15)
+        self.buttons_sizer.Add(self.search_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(15)
+        self.buttons_sizer.Add(self.db_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(15)
+        self.buttons_sizer.Add(self.translate_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(15)
         self.buttons_panel.SetSizer(self.buttons_sizer)
 
         self.main_panel = EmojiSearchTab(self)
