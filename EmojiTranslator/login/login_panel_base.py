@@ -42,8 +42,10 @@ class LoginPanelBase(wx.Frame):
         has_letter = False
         has_digit = False
         for char in password:
-            has_digit = char.isdigit()
-            has_letter = char.isalpha()
+            if not has_digit:
+                has_digit = char.isdigit()
+            if not has_letter:
+                has_letter = char.isalpha()
 
         return (len(password) >= 6 and has_digit and has_letter)
 

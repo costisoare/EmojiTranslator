@@ -47,12 +47,12 @@ class RegisterPanel(LoginPanelBase):
         if len(self.user.GetValue()) == 0 or len(self.password.GetValue()) == 0:
             self.result.SetForegroundColour((255, 0, 0))
             self.result.SetLabel("Username and Password must NOT be empty!")
-        elif not self.is_pass_valid(self.password.GetValue()):
-            self.result.SetForegroundColour((255, 0, 0))
-            self.result.SetLabel("Password is not strong enough.")
         elif keyring.get_password("emojiapp", self.user.GetValue()) is not None:
             self.result.SetForegroundColour((255, 0, 0))
             self.result.SetLabel("Username already in use!")
+        elif not self.is_pass_valid(self.password.GetValue()):
+            self.result.SetForegroundColour((255, 0, 0))
+            self.result.SetLabel("Password is not strong enough.")
         else:
             self.result.SetForegroundColour((0, 255, 0))
             keyring.set_password("emojiapp", self.user.GetValue(), self.password.GetValue())
