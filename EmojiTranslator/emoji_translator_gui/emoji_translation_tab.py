@@ -13,11 +13,11 @@ class EmojiTranslationTab(wx.Panel):
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
 
-        self.main_sizer = wx.FlexGridSizer(2, 3, 0, 0)
+        self.main_sizer = wx.FlexGridSizer(5, 1, 0, 0)
 
         self.main_sizer.AddGrowableRow(1)
+        self.main_sizer.AddGrowableRow(4)
         self.main_sizer.AddGrowableCol(0)
-        self.main_sizer.AddGrowableCol(2)
 
         self.translate_from = wx.StaticText(self, label="Text With Emojis")
         self.translate_to = wx.StaticText(self, label="Text Without Emojis")
@@ -28,7 +28,9 @@ class EmojiTranslationTab(wx.Panel):
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
 
         swap_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'swap.png')
-        swap_bmp = wx.Bitmap(swap_bmp_file).ConvertToImage().Scale(32, 32, wx.IMAGE_QUALITY_HIGH)
+        swap_bmp = wx.Bitmap(swap_bmp_file).ConvertToImage()
+        swap_bmp = swap_bmp.Scale(32, 32, wx.IMAGE_QUALITY_HIGH)
+        swap_bmp = swap_bmp.Rotate90()
         self.swap_button = wx.BitmapButton(self, bitmap=wx.Bitmap(swap_bmp), style=wx.BORDER_NONE)
         self.swap_button.Bind(wx.EVT_BUTTON, self.OnSwapTranslate)
         self.swap_button.Bind(wx.EVT_MOTION, self.OnSwapMouseMotion)
@@ -39,11 +41,10 @@ class EmojiTranslationTab(wx.Panel):
         self.out_text.SetBackgroundColour(self.GetBackgroundColour())
         self.out_text.SetFont(self.user_input.GetFont())
 
-        self.main_sizer.Add(self.translate_from, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.LEFT, 10)
+        self.main_sizer.Add(self.translate_from, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)
+        self.main_sizer.Add(self.user_input, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)
         self.main_sizer.Add(self.swap_button, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 10)
         self.main_sizer.Add(self.translate_to, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.RIGHT, 10)
-        self.main_sizer.Add(self.user_input, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT, 10)
-        self.main_sizer.Add(wx.StaticText(self, label=""), 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 10)
         self.main_sizer.Add(self.out_text, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.RIGHT, 10)
 
         self.SetSizer(self.main_sizer)
@@ -57,13 +58,6 @@ class EmojiTranslationTab(wx.Panel):
             self.out_text.SetValue(emoji.demojize(self.user_input.GetValue()))
         else:
             self.out_text.SetValue(emoji.emojize(self.user_input.GetValue(), use_aliases=True))
-
-    def OnTTS(self, event):
-        if hasattr(self, "emoji_symbol"):
-            self.tts_engine.say(self.emoji_symbol.emoji_desc)
-        else:
-            self.tts_engine.say(self.out_text.GetLabel())
-        self.tts_engine.runAndWait()
 
     def OnSwapTranslate(self, event):
         from_label = self.translate_from.GetLabel()
