@@ -5,8 +5,8 @@ from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import EmojiTranslationTab
 
 class MainWindow(wx.Frame):
-    def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title)
+    def __init__(self):
+        wx.Frame.__init__(self, None, title="Emoji Translator")
 
         self.sizer = wx.FlexGridSizer(1, 2, 0, 0)
         self.sizer.AddGrowableRow(0)
@@ -68,8 +68,4 @@ class MainWindow(wx.Frame):
                 button.SetBackgroundColour(self.buttons_panel.GetBackgroundColour())
         self.sizer.Add(self.main_panel, 1, wx.EXPAND)
         self.Layout()
-
-app = wx.App()
-frame = MainWindow(None, "Emoji Translator")
-app.MainLoop()
 

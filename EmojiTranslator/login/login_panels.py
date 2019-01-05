@@ -24,7 +24,7 @@ class LoginPanel(LoginPanelBase):
 
     def OnRegister(self, event):
         self.Close()
-        frame = RegisterPanel()
+        RegisterPanel().Show()
 
 class RegisterPanel(LoginPanelBase):
     def __init__(self):
@@ -62,7 +62,7 @@ class RegisterPanel(LoginPanelBase):
 
     def OnLogin(self, event):
         self.Close()
-        frame = LoginPanel()
+        LoginPanel().Show()
 
 if __name__ == "__main__":
     app = wx.App(False)

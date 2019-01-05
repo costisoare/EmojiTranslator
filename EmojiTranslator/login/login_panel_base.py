@@ -1,4 +1,5 @@
 import wx
+from emoji_translator.main_app import MainWindow
 
 class LoginPanelBase(wx.Frame):
     def __init__(self, title):
@@ -32,6 +33,12 @@ class LoginPanelBase(wx.Frame):
         self.register_btn = wx.Button(self, label="Register now!")
         self.main_sizer.Add(self.register_btn, 0, wx.ALL | wx.CENTER, 5)
 
+        self.guest_btn = wx.Button(self, label="Continue as guest.", style=wx.BORDER_NONE)
+        self.guest_btn.SetFont(wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
+        self.guest_btn.SetBackgroundColour(self.GetBackgroundColour())
+        self.main_sizer.Add(self.guest_btn, 0, wx.ALL | wx.CENTER, 5)
+        self.guest_btn.Bind(wx.EVT_BUTTON, self.OnGuest)
+
         self.result = wx.StaticText(self, label="")
         self.main_sizer.Add(self.result, 0, wx.ALIGN_CENTER, 5)
 
@@ -55,3 +62,8 @@ class LoginPanelBase(wx.Frame):
 
     def OnLogin(self, event):
         pass
+
+    def OnGuest(self, event):
+        self.Close()
+        MainWindow().Show()
+
