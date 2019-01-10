@@ -69,3 +69,8 @@ class MainWindow(wx.Frame):
         self.sizer.Add(self.main_panel, 1, wx.EXPAND)
         self.Layout()
 
+if __name__ == "__main__":
+    app = wx.App(False)
+    from login.login_panels import LoginPanel
+    frame = LoginPanel()
+    app.MainLoop()

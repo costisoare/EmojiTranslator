@@ -11,6 +11,8 @@ class LoginPanel(LoginPanelBase):
 
         self.login_btn.Bind(wx.EVT_BUTTON, self.OnLogin)
         self.register_btn.Bind(wx.EVT_BUTTON, self.OnRegister)
+        self.register_btn.SetLabel("Create an account now!")
+        self.Layout()
 
     def OnLogin(self, event):
         if keyring.get_password("emojiapp", self.user.GetValue()) == self.password.GetValue():
@@ -32,11 +34,11 @@ class RegisterPanel(LoginPanelBase):
     def __init__(self):
         LoginPanelBase.__init__(self, title="Register")
 
+        self.login_btn.SetLabel("Back to Login")
         self.password.Bind(wx.EVT_TEXT_ENTER, self.OnRegister)
 
         self.login_btn.Bind(wx.EVT_BUTTON, self.OnLogin)
         self.register_btn.Bind(wx.EVT_BUTTON, self.OnRegister)
-        self.login_btn.Hide()
 
         self.pass_guideline = wx.StaticText(self, label="Password must:\n"
                                                         "- Be at least 6 characters long\n"
@@ -60,13 +62,9 @@ class RegisterPanel(LoginPanelBase):
             keyring.set_password("emojiapp", self.user.GetValue(), self.password.GetValue())
             self.result.SetLabel("Account created successfully!")
             self.login_btn.Show()
+            self.register_btn.Hide()
         self.Layout()
 
     def OnLogin(self, event):
         self.Close()
         LoginPanel().Show()
-
-if __name__ == "__main__":
-    app = wx.App(False)
-    frame = LoginPanel()
-    app.MainLoop()

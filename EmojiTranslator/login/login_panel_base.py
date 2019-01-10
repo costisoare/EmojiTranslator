@@ -17,7 +17,6 @@ class LoginPanelBase(wx.Frame):
         self.user_sizer.Add(self.user, 1, wx.ALL, 5)
 
         self.pass_sizer = wx.GridSizer(1, 2, 0, 0)
-
         self.pass_label = wx.StaticText(self, label="Password:")
         self.pass_sizer.Add(self.pass_label, 0, wx.ALL | wx.CENTER, 5)
         self.password = wx.TextCtrl(self, style=wx.TE_PASSWORD|wx.TE_PROCESS_ENTER)
@@ -28,16 +27,19 @@ class LoginPanelBase(wx.Frame):
         self.main_sizer.Add(self.pass_sizer, 0, wx.ALL, 5)
 
         self.login_btn = wx.Button(self, label="Login")
+        self.login_btn.SetCursor(wx.Cursor(wx.CURSOR_HAND))
         self.main_sizer.Add(self.login_btn, 0, wx.ALL | wx.CENTER, 5)
 
         self.register_btn = wx.Button(self, label="Register now!")
         self.main_sizer.Add(self.register_btn, 0, wx.ALL | wx.CENTER, 5)
+        self.register_btn.SetCursor(wx.Cursor(wx.CURSOR_HAND))
 
-        self.guest_btn = wx.Button(self, label="Continue as guest.", style=wx.BORDER_NONE)
+        self.guest_btn = wx.Button(self, label="Continue as guest", style=wx.BORDER_NONE)
         self.guest_btn.SetFont(wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
         self.guest_btn.SetBackgroundColour(self.GetBackgroundColour())
         self.main_sizer.Add(self.guest_btn, 0, wx.ALL | wx.CENTER, 5)
         self.guest_btn.Bind(wx.EVT_BUTTON, self.OnGuest)
+        self.guest_btn.SetCursor(wx.Cursor(wx.CURSOR_HAND))
 
         self.result = wx.StaticText(self, label="")
         self.main_sizer.Add(self.result, 0, wx.ALIGN_CENTER, 5)
