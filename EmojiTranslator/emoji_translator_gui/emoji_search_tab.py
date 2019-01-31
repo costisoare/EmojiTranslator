@@ -75,4 +75,6 @@ class EmojiSearchTab(wx.Panel):
 
     def get_matched_list(self):
         input_str = self.user_input.GetValue()
-        return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9))
+        return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9),
+                      key=lambda x: difflib.SequenceMatcher(None, x, input_str).ratio(),
+                      reverse=True)
