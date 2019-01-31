@@ -3997,12 +3997,5 @@ for unicode in UNICODE_EMOJI:
     UNICODE_STRING[unicode] = unicode_to_fullstring(unicode)
 STRING_UNICODE = {v: k for (k, v) in UNICODE_STRING.items()}
 
-EMOJI_DESC_LIST = sorted(EMOJI_UNICODE.keys()) + sorted(EMOJI_ALIAS_UNICODE.keys())
-
-def get_matched_list(to_match):
-    matches = sorted([s for s in EMOJI_DESC_LIST if s.startswith(to_match)])
-    if len(matches) > 10:
-        return matches[0:9]
-    else:
-        return matches
+EMOJI_DESC_LIST = list(set(sorted(EMOJI_UNICODE.keys()) + sorted(EMOJI_ALIAS_UNICODE.keys())))
 

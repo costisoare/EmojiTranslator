@@ -1,5 +1,6 @@
-from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_gui_utils import *
+from emoji_translator_utils.emoji_dict_utils import EMOJI_DESC_LIST
+import difflib
 
 class EmojiSearchTab(wx.Panel):
     def __init__(self, parent):
@@ -38,14 +39,12 @@ class EmojiSearchTab(wx.Panel):
         self.tts_engine.setProperty('rate', self.tts_engine.getProperty('rate') - 80)
 
     def OnInputChanged(self, event):
-        current_input = self.user_input.GetValue()
-
-        matches = get_matched_list(current_input)
+        matches = [match.replace("_", " ") for match in self.get_matched_list()]
         self.user_input.GetPopupControl().RemoveItems()
         self.user_input.GetPopupControl().AddItems(matches)
 
     def OnDescClick(self, event):
-        desc = event.GetText()
+        desc = event.GetText().replace(" ", "_")
 
         if hasattr(self, "emoji_symbol"):
             self.emoji_symbol.bitmap.Destroy()
@@ -55,16 +54,25 @@ class EmojiSearchTab(wx.Panel):
             init_emoji = wx.Image(unicode_to_filename(EMOJI_UNICODE[desc], 128))
         except KeyError:
             init_emoji = wx.Image(unicode_to_filename(EMOJI_ALIAS_UNICODE[desc], 128))
-        self.emoji_symbol = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
-                                        desc)
+
+        self.emoji_symbol = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)), desc)
         self.down_sizer.Add(self.emoji_symbol.bitmap, 1, wx.ALIGN_CENTER)
 
         self.tts_button.Show(hasattr(self, "emoji_symbol") or hasattr(self, "out_text"))
+
+        # this was moved from the popup implementation so that it
+        # does not overlap with the on click impl in this class
+        # this statement ensures that the input text is shown consistently
+        self.user_input.GetPopupControl().value = self.user_input.GetPopupControl().curitem
+        self.user_input.Dismiss()
+
         self.Layout()
 
     def OnTTS(self, event):
-        if hasattr(self, "emoji_symbol"):
-            self.tts_engine.say(self.emoji_symbol.emoji_desc)
-        else:
-            self.tts_engine.say(self.out_text.GetLabel())
+        self.tts_engine.say(self.emoji_symbol.emoji_desc)
         self.tts_engine.runAndWait()
+
+
+    def get_matched_list(self):
+        input_str = self.user_input.GetValue()
+        return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9))

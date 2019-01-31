@@ -17,17 +17,61 @@ class EmojiSearchComboPopup(wx.ComboPopup):
     def RemoveItems(self):
         self.list_ctrl.ClearAll()
 
+    def OnMotion(self, evt):
+        item, flags = self.list_ctrl.HitTest(evt.GetPosition())
+        if item >= 0:
+            self.list_ctrl.Select(item)
+            self.curitem = item
+
+    # The following methods are those that are overridable from the
+    # ComboPopup base class.
+
+    def Init(self):
+        self.value = -1
+        self.curitem = -1
+
     # Create the popup child control.  Return true for success.
     def Create(self, parent):
-        self.list_ctrl = wx.ListCtrl(parent,
-                                     style=wx.LC_LIST | wx.LC_SINGLE_SEL | wx.SIMPLE_BORDER)
+        self.list_ctrl = wx.ListCtrl(parent, style=wx.LC_LIST | wx.LC_SINGLE_SEL | wx.SIMPLE_BORDER)
+        self.list_ctrl.Bind(wx.EVT_MOTION, self.OnMotion)
         self.list_ctrl.SetFont(wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL,
-                                           False, u'Consolas'))
+                                       False, u'Consolas'))
         return True
 
     # Return the widget that is to be used for the popup
     def GetControl(self):
         return self.list_ctrl
+
+    # Called just prior to displaying the popup, you can use it to
+    # 'select' the current item.
+    def SetStringValue(self, value):
+        index = self.list_ctrl.FindItem(-1, value)
+        if index != wx.NOT_FOUND:
+            self.list_ctrl.Select(index)
+
+    # Return a string representation of the current item.
+    def GetStringValue(self):
+        if self.value >= 0:
+            return self.list_ctrl.GetItemText(self.value)
+        return ""
+
+    # Called immediately after the popup is shown
+    def OnPopup(self):
+        wx.ComboPopup.OnPopup(self)
+
+    # Called when popup is dismissed
+    def OnDismiss(self):
+        wx.ComboPopup.OnDismiss(self)
+
+    # Receives key events from the parent ComboCtrl.  Events not
+    # handled should be skipped, as usual.
+    def OnComboKeyEvent(self, event):
+        wx.ComboPopup.OnComboKeyEvent(self, event)
+
+    # Implement if you need to support special action when user
+    # double-clicks on the parent wxComboCtrl.
+    def OnComboDoubleClick(self):
+        wx.ComboPopup.OnComboDoubleClick(self)
 
 class EmojiBitmap(object):
     def __init__(self, bitmap, emoji_desc):
