@@ -11,7 +11,7 @@ class EmojiDBTab(ScrolledPanel):
         self.SetBackgroundColour((255, 253, 208))
         self.SetupScrolling(True)
         self.emoji_categories = emoji_categs_from_file()
-        self.emoji_cat_buttons = dict()
+        self.emoji_categ_buttons = dict()
 
         self.dbtab_sizer = wx.FlexGridSizer(3, 1, 0, 0)
         self.dbtab_sizer.AddGrowableRow(1)
@@ -24,11 +24,11 @@ class EmojiDBTab(ScrolledPanel):
 
         for cat in self.emoji_categories:
             bmp_path = unicode_to_filename(STRING_UNICODE[self.emoji_categories[cat][0]], 64)
-            self.emoji_cat_buttons[cat] = wx.BitmapToggleButton(self, label=wx.Bitmap(bmp_path),
-                                                                name=cat, style=wx.BORDER_NONE)
-            self.emoji_cat_buttons[cat].Bind(wx.EVT_TOGGLEBUTTON, self.OnEmojiCategory)
-            self.emoji_cat_buttons[cat].SetBackgroundColour((255, 255, 255))
-            self.button_sizer.Add(self.emoji_cat_buttons[cat], 1, wx.EXPAND)
+            self.emoji_categ_buttons[cat] = wx.BitmapToggleButton(self, label=wx.Bitmap(bmp_path),
+                                                                  name=cat, style=wx.BORDER_NONE)
+            self.emoji_categ_buttons[cat].Bind(wx.EVT_TOGGLEBUTTON, self.OnEmojiCategory)
+            self.emoji_categ_buttons[cat].SetBackgroundColour((255, 255, 255))
+            self.button_sizer.Add(self.emoji_categ_buttons[cat], 1, wx.EXPAND)
 
         self.dbtab_sizer.AddSpacer(30)
         self.SetSizer(self.dbtab_sizer)
@@ -36,10 +36,10 @@ class EmojiDBTab(ScrolledPanel):
     def OnEmojiCategory(self, event):
         pressed_button = event.GetEventObject()
         pressed_button.SetBackgroundColour((105, 105, 105))
-        for cat in self.emoji_cat_buttons:
-            if not (self.emoji_cat_buttons[cat] is pressed_button):
-                self.emoji_cat_buttons[cat].SetValue(False)
-                self.emoji_cat_buttons[cat].SetBackgroundColour((255, 255, 255))
+        for cat in self.emoji_categ_buttons:
+            if not (self.emoji_categ_buttons[cat] is pressed_button):
+                self.emoji_categ_buttons[cat].SetValue(False)
+                self.emoji_categ_buttons[cat].SetBackgroundColour((255, 255, 255))
 
         self.populate_grid_with_emojis(pressed_button.GetName())
         self.SetupScrolling()
@@ -55,21 +55,22 @@ class EmojiPanel(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.Show(False)
         self.sizer = wx.GridSizer(len(category_list) / 8 + 1, 8, 15, 0)
+        self.emoji_size = 64
+        self.add_emojis_to_panel(category_list)
+        self.sizer.SetRows(self.realnum_emojis / 8 + 1)
+        self.SetSizer(self.sizer)
+        self.Show(True)
 
-        realnum_emojis = 0
+    def add_emojis_to_panel(self, category_list):
+        self.realnum_emojis = 0
         for i in range(len(category_list)):
             emoji_string = category_list[i].lower()
             if '_skin_tone' in UNICODE_EMOJI[STRING_UNICODE[emoji_string]]:
                 continue
-            init_emoji = wx.Image(unicode_to_filename(STRING_UNICODE[emoji_string], 64))
-            emoji = EmojiBitmap(
-                wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
-                UNICODE_EMOJI[STRING_UNICODE[emoji_string]],
-            )
+            init_emoji = wx.Image(unicode_to_filename(STRING_UNICODE[emoji_string],
+                                                      self.emoji_size))
+            emoji = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
+                                UNICODE_EMOJI[STRING_UNICODE[emoji_string]])
 
             self.sizer.Add(emoji.bitmap, 1, wx.ALIGN_CENTER)
-            realnum_emojis += 1
-
-        self.sizer.SetRows(realnum_emojis / 8 + 1)
-        self.SetSizer(self.sizer)
-        self.Show(True)
+            self.realnum_emojis += 1

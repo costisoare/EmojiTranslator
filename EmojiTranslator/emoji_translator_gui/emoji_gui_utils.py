@@ -90,7 +90,10 @@ class EmojiBitmap(object):
 
     def OnCopyEmoji(self, event):
         dataObj = wx.TextDataObject()
-        dataObj.SetText(EMOJI_UNICODE[self.emoji_desc.replace(' ', '_')])
+        try:
+            dataObj.SetText(EMOJI_UNICODE[self.emoji_desc.replace(' ', '_')])
+        except KeyError:
+            dataObj.SetText(EMOJI_ALIAS_UNICODE[self.emoji_desc.replace(' ', '_')])
         wx.TheClipboard.SetData(dataObj)
         wx.TheClipboard.Close()
 
