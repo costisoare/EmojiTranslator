@@ -39,7 +39,7 @@ class EmojiSearchTab(wx.Panel):
         self.tts_engine.setProperty('rate', self.tts_engine.getProperty('rate') - 80)
 
     def OnInputChanged(self, event):
-        matches = [match.replace("_", " ") for match in self.get_matched_list()]
+        matches = [match.replace("_", " ") for match in get_matched_list(self.user_input.GetValue())]
         self.user_input.GetPopupControl().RemoveItems()
         self.user_input.GetPopupControl().AddItems(matches)
 
@@ -73,8 +73,7 @@ class EmojiSearchTab(wx.Panel):
         self.tts_engine.runAndWait()
 
 
-    def get_matched_list(self):
-        input_str = self.user_input.GetValue()
-        return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9),
-                      key=lambda x: difflib.SequenceMatcher(None, x, input_str).ratio(),
-                      reverse=True)
+def get_matched_list(input_str):
+    return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9),
+                  key=lambda x: difflib.SequenceMatcher(None, x, input_str).ratio(),
+                  reverse=True)

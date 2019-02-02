@@ -3957,23 +3957,6 @@ def unicode_to_fullstring(unicode):
         unicode_repr = unicode_repr + format(ord(char), 'x').zfill(4) + '-'
     return unicode_repr[:-1]
 
-# search for a suitable emoji in main or alias dict based on the input
-# returns the unicode
-# JUST A SIMPLE INITIAL FUNCTION
-def emoji_lookup(input):
-    for emoji_desc in {**EMOJI_UNICODE, **EMOJI_ALIAS_UNICODE}:
-        # check if full description is matched
-        full_text_desc_spaced = emoji_desc.replace('_', ' ').lower()
-        if full_text_desc_spaced == input.lower() \
-        or emoji_desc == input.lower():
-            try:
-                return (True, EMOJI_UNICODE[emoji_desc])
-            except KeyError:
-                return (True, EMOJI_ALIAS_UNICODE[emoji_desc])
-
-    return (False, 'Nothing has been found '
-            + EMOJI_UNICODE['disappointed_face'])
-
 # this method returns a file name based on the unicode
 # e.g. for u'\U0001F92D' this returns 1f92d.png
 def unicode_to_filename(unicode, emoji_size, file_type='thumbnail'):
@@ -3983,10 +3966,15 @@ def unicode_to_filename(unicode, emoji_size, file_type='thumbnail'):
             file_name = file_name + format(ord(char), 'x').zfill(4) + '-'
 
     # get the absolute path from the relative one
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)),
+    final_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                         "../../EmojiOne_4.0_" + str(emoji_size)
                         + "x" + str(emoji_size) + "_png/" + file_name[:-1].lower()
                         + "." + file_type)
+
+    if os.path.isfile(final_path):
+        return final_path
+    else:
+        return "FILE NOT FOUND"
 
 # ------------------------------------------------------------------------------
 # --------------- ADDITIONAL CONVERTED DICTIONARIES ----------------------------
