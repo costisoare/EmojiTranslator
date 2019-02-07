@@ -66,6 +66,14 @@ class LoginPanelBase(wx.Frame):
         pass
 
     def OnGuest(self, event):
-        self.Close()
-        MainWindow().Show()
+        confirmation_dlg = wx.MessageDialog(None,
+                                            "Are you sure you want to login as guest?\nYour session settings will be lost.",
+                                            "Guest login",
+                                            wx.YES_NO)
+        result = confirmation_dlg.ShowModal()
+
+        if result == wx.ID_YES:
+            self.Close()
+            MainWindow().Show()
+
 
