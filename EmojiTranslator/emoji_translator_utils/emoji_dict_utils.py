@@ -3959,7 +3959,7 @@ def unicode_to_fullstring(unicode):
 
 # this method returns a file name based on the unicode
 # e.g. for u'\U0001F92D' this returns 1f92d.png
-def unicode_to_filename(unicode, emoji_size, file_type='thumbnail'):
+def unicode_to_filename(unicode, emoji_size, version="4.5"):
     file_name = ""
     for char in unicode:
         if format(ord(char), 'x') not in ["200d", "fe0f"]:
@@ -3967,9 +3967,9 @@ def unicode_to_filename(unicode, emoji_size, file_type='thumbnail'):
 
     # get the absolute path from the relative one
     final_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                        "../../EmojiOne_4.0_" + str(emoji_size)
+                        "../../EmojiOne_" + version + "_" + str(emoji_size)
                         + "x" + str(emoji_size) + "_png/" + file_name[:-1].lower()
-                        + "." + file_type)
+                        + ".png")
 
     if os.path.isfile(final_path):
         return final_path
