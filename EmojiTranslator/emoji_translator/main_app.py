@@ -3,6 +3,7 @@ import wx
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import EmojiTranslationTab
+from emoji_translator_gui.supported_tabs import Tab
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -17,10 +18,15 @@ class MainWindow(wx.Frame):
         self.buttons_sizer = wx.BoxSizer(wx.VERTICAL)
         self.buttons_panel.SetFont(wx.Font(12, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
-        self.search_button = wx.ToggleButton(self.buttons_panel, label='Search')
-        self.db_button = wx.ToggleButton(self.buttons_panel, label='Database')
-        self.translate_button = wx.ToggleButton(self.buttons_panel, label='Translate')
-        self.options_button_list = list([self.search_button, self.db_button, self.translate_button])
+        self.search_button = wx.ToggleButton(self.buttons_panel, label=Tab.SEARCH.value)
+        self.db_button = wx.ToggleButton(self.buttons_panel, label=Tab.DATABASE.value)
+        self.translate_button = wx.ToggleButton(self.buttons_panel, label=Tab.TRANSLATE.value)
+        self.composer_button = wx.ToggleButton(self.buttons_panel, label=Tab.COMPOSE.value)
+        self.settings_button = wx.ToggleButton(self.buttons_panel, label=Tab.SETTINGS.value)
+        self.settings_button.SetFont(self.settings_button.GetFont().MakeBold())
+
+        self.options_button_list = list([self.search_button, self.db_button,
+                                         self.translate_button, self.composer_button, self.settings_button])
 
         for button in self.options_button_list:
             button.SetBackgroundColour(self.buttons_panel.GetBackgroundColour())
@@ -33,6 +39,11 @@ class MainWindow(wx.Frame):
         self.buttons_sizer.AddSpacer(15)
         self.buttons_sizer.Add(self.translate_button, 0, wx.ALL, 5)
         self.buttons_sizer.AddSpacer(15)
+        self.buttons_sizer.Add(self.composer_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(50)
+        self.buttons_sizer.Add(self.settings_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(15)
+
         self.buttons_panel.SetSizer(self.buttons_sizer)
 
         self.main_panel = EmojiSearchTab(self)
@@ -47,12 +58,14 @@ class MainWindow(wx.Frame):
         self.SetSize((wx.GetDisplaySize().width * 0.45, wx.GetDisplaySize().height * 0.9))
 
     def get_panel_by_name(self, name):
-        if name == 'Translate':
+        if name == Tab.SEARCH.value:
+            return EmojiSearchTab(self)
+        elif name == Tab.TRANSLATE.value:
             return EmojiTranslationTab(self)
-        elif name == 'Database':
+        elif name == Tab.DATABASE.value:
             return EmojiDBTab(self)
         else:
-            return EmojiSearchTab(self)
+            return wx.Panel(self)
 
     def OnNewPress(self, event):
         self.main_panel.Destroy()
