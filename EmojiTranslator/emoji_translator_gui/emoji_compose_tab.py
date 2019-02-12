@@ -27,4 +27,3 @@ class EmojiComposeTab(wx.Panel):
     def OnComposerClickEmoji(self, event):
         unicode = EMOJI_UNICODE[self.clicked_composer_emoji.replace(' ', '_')]
         self.editor.AppendText(unicode)
-        self.editor.AppendText(" ")
