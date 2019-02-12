@@ -74,10 +74,14 @@ class EmojiSearchComboPopup(wx.ComboPopup):
         wx.ComboPopup.OnComboDoubleClick(self)
 
 class EmojiBitmap(object):
-    def __init__(self, bitmap, emoji_desc):
+    def __init__(self, bitmap, emoji_desc, composer=False, parent=None):
+        self.parent = parent
         self.bitmap = bitmap
         self.emoji_desc = emoji_desc.replace('_', ' ')
         self.bitmap.Bind(wx.EVT_RIGHT_DOWN,self.OnEmojiRightClick)
+        if composer:
+            self.bitmap.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+            self.bitmap.Bind(wx.EVT_LEFT_UP, self.OnComposerClickEmoji)
 
     def OnShowDesc(self, event):
         emoji_tip = wx.adv.RichToolTip(self.emoji_desc, "")
@@ -96,6 +100,10 @@ class EmojiBitmap(object):
             dataObj.SetText(EMOJI_ALIAS_UNICODE[self.emoji_desc.replace(' ', '_')])
         wx.TheClipboard.SetData(dataObj)
         wx.TheClipboard.Close()
+
+    def OnComposerClickEmoji(self, event):
+        self.parent.clicked_composer_emoji = self.emoji_desc.replace(' ', '_')
+        self.parent.OnComposerClickEmoji(event)
 
     def OnEmojiRightClick(self, event):
         popupmenu = wx.Menu()

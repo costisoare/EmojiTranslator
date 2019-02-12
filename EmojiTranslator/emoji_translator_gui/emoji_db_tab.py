@@ -6,8 +6,9 @@ from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_gui_utils import EmojiBitmap
 
 class EmojiDBTab(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, composer=False):
         wx.Panel.__init__(self, parent)
+        self.parent = parent
         self.SetBackgroundColour((255, 253, 208))
         self.emoji_categories = emoji_categs_from_file()
         self.emoji_categ_buttons = dict()
@@ -19,10 +20,14 @@ class EmojiDBTab(wx.Panel):
         self.button_sizer = wx.GridSizer(1, len(self.emoji_categories), 0, 0)
         self.emoji_bmps_panel = wx.Panel()
 
+        self.composer = composer
+        self.emoji_button_size = 32 if self.composer else 64
+
         self.dbtab_sizer.Add(self.button_sizer, 1, wx.EXPAND)
         self.dbtab_sizer.AddSpacer(10)
+
         for cat in self.emoji_categories:
-            bmp_path = unicode_to_filename(STRING_UNICODE[self.emoji_categories[cat][0]], 64)
+            bmp_path = unicode_to_filename(STRING_UNICODE[self.emoji_categories[cat][0]], self.emoji_button_size)
             self.emoji_categ_buttons[cat] = wx.BitmapToggleButton(self, label=wx.Bitmap(bmp_path),
                                                                   name=cat, style=wx.BORDER_NONE)
             self.emoji_categ_buttons[cat].Bind(wx.EVT_TOGGLEBUTTON, self.OnEmojiCategory)
@@ -42,22 +47,33 @@ class EmojiDBTab(wx.Panel):
         self.populate_grid_with_emojis(pressed_button.GetName())
         self.Layout()
 
+    def OnComposerClickEmoji(self, event):
+        self.parent.clicked_composer_emoji = self.clicked_composer_emoji
+        self.parent.OnComposerClickEmoji(event)
+
+
     def populate_grid_with_emojis(self, category):
         self.emoji_bmps_panel.Destroy()
-        self.emoji_bmps_panel = EmojiPanel(self, self.emoji_categories[category])
+        self.emoji_bmps_panel = EmojiPanel(self, self.emoji_categories[category], composer=self.composer)
         self.dbtab_sizer.Add(self.emoji_bmps_panel, 1, wx.EXPAND)
 
 class EmojiPanel(ScrolledPanel):
-    def __init__(self, parent, category_list):
+    def __init__(self, parent, category_list, composer=False):
         ScrolledPanel.__init__(self, parent)
+        self.parent = parent
+        self.composer = composer
         self.SetupScrolling()
         self.Show(False)
         self.sizer = wx.GridSizer(len(category_list) / 8 + 1, 8, 15, 0)
-        self.emoji_size = 64
+        self.emoji_size = 32 if self.parent.composer else 64
         self.add_emojis_to_panel(category_list)
         self.sizer.SetRows(self.realnum_emojis / 8 + 1)
         self.SetSizer(self.sizer)
         self.Show(True)
+
+    def OnComposerClickEmoji(self, event):
+        self.parent.clicked_composer_emoji = self.clicked_composer_emoji
+        self.parent.OnComposerClickEmoji(event)
 
     def add_emojis_to_panel(self, category_list):
         self.realnum_emojis = 0
@@ -68,7 +84,7 @@ class EmojiPanel(ScrolledPanel):
             init_emoji = wx.Image(unicode_to_filename(STRING_UNICODE[emoji_string],
                                                       self.emoji_size))
             emoji = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
-                                UNICODE_EMOJI[STRING_UNICODE[emoji_string]])
-
+                                UNICODE_EMOJI[STRING_UNICODE[emoji_string]],
+                                composer=self.composer, parent=self)
             self.sizer.Add(emoji.bitmap, 1, wx.ALIGN_CENTER)
             self.realnum_emojis += 1

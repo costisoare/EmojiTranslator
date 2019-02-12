@@ -8,7 +8,7 @@ FROM_TEXT_TO_EMOJI = 0
 FROM_EMOJI_TO_TEXT = 1
 
 class EmojiTranslationTab(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
@@ -23,9 +23,15 @@ class EmojiTranslationTab(wx.Panel):
         self.translate_to = wx.StaticText(self, label="Text Without Emojis")
         self.translation_direction = FROM_EMOJI_TO_TEXT
 
+        self.out_text = ExpandoTextCtrl(self,
+                                        style=wx.TE_READONLY | wx.NO_BORDER)
+        self.out_text.SetBackgroundColour(self.GetBackgroundColour())
+        self.out_text.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+
         self.user_input = ExpandoTextCtrl(self)
         self.user_input.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
+        self.user_input.SetValue(saved_text)
 
         swap_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'swap.png')
         swap_bmp = wx.Bitmap(swap_bmp_file).ConvertToImage()
@@ -36,10 +42,6 @@ class EmojiTranslationTab(wx.Panel):
         self.swap_button.Bind(wx.EVT_MOTION, self.OnSwapMouseMotion)
         self.swap_button.Bind(wx.EVT_MOTION, self.OnInputChanged)
         self.swap_button.SetBackgroundColour(self.GetBackgroundColour())
-
-        self.out_text = ExpandoTextCtrl(self, style=wx.TE_READONLY|wx.NO_BORDER)
-        self.out_text.SetBackgroundColour(self.GetBackgroundColour())
-        self.out_text.SetFont(self.user_input.GetFont())
 
         self.main_sizer.Add(self.translate_from, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)
         self.main_sizer.Add(self.user_input, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)

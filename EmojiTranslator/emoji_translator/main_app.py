@@ -2,7 +2,8 @@ import wx
 
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
-from emoji_translator_gui.emoji_translation_tab import EmojiTranslationTab
+from emoji_translator_gui.emoji_translation_tab import *
+from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.supported_tabs import Tab
 
 class MainWindow(wx.Frame):
@@ -54,6 +55,8 @@ class MainWindow(wx.Frame):
         self.sizer.Add(self.main_panel, 1, wx.EXPAND)
         self.SetSizer(self.sizer)
 
+        self.current_saved_text = ""
+
         self.Show(True)
         self.SetSize((wx.GetDisplaySize().width * 0.45, wx.GetDisplaySize().height * 0.9))
 
@@ -61,13 +64,21 @@ class MainWindow(wx.Frame):
         if name == Tab.SEARCH.value:
             return EmojiSearchTab(self)
         elif name == Tab.TRANSLATE.value:
-            return EmojiTranslationTab(self)
+            return EmojiTranslationTab(self, saved_text=self.current_saved_text)
         elif name == Tab.DATABASE.value:
             return EmojiDBTab(self)
+        elif name == Tab.COMPOSE.value:
+            return EmojiComposeTab(self, saved_text=self.current_saved_text)
         else:
-            return wx.Panel(self)
+            return wx.Panel()
 
     def OnNewPress(self, event):
+        if type(self.main_panel) is EmojiComposeTab:
+            self.current_saved_text = self.main_panel.editor.GetValue()
+        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == FROM_EMOJI_TO_TEXT:
+            self.current_saved_text = self.main_panel.out_text.GetValue()
+        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == FROM_TEXT_TO_EMOJI:
+            self.current_saved_text = self.main_panel.user_input.GetValue()
         self.main_panel.Destroy()
         pressed_button = event.GetEventObject()
         pressed_button.SetBackgroundColour((192, 192, 192))

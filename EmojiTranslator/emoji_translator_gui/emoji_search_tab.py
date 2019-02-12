@@ -55,7 +55,7 @@ class EmojiSearchTab(wx.Panel):
         except KeyError:
             init_emoji = wx.Image(unicode_to_filename(EMOJI_ALIAS_UNICODE[desc], 128))
 
-        self.emoji_symbol = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)), desc)
+        self.emoji_symbol = EmojiBitmap(wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)), desc, parent=self)
         self.down_sizer.Add(self.emoji_symbol.bitmap, 1, wx.ALIGN_CENTER)
 
         self.tts_button.Show(hasattr(self, "emoji_symbol") or hasattr(self, "out_text"))
