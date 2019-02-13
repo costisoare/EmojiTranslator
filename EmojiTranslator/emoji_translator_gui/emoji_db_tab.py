@@ -31,6 +31,7 @@ class EmojiDBTab(wx.Panel):
             self.emoji_categ_buttons[cat] = wx.BitmapToggleButton(self, label=wx.Bitmap(bmp_path),
                                                                   name=cat, style=wx.BORDER_NONE)
             self.emoji_categ_buttons[cat].Bind(wx.EVT_TOGGLEBUTTON, self.OnEmojiCategory)
+            self.emoji_categ_buttons[cat].SetCursor(wx.Cursor(wx.CURSOR_HAND))
             self.emoji_categ_buttons[cat].SetBackgroundColour((255, 255, 255))
             self.button_sizer.Add(self.emoji_categ_buttons[cat], 1, wx.EXPAND)
 
