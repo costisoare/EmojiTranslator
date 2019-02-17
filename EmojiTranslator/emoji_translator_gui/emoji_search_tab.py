@@ -1,6 +1,7 @@
 from emoji_translator_gui.emoji_gui_utils import *
 from emoji_translator_utils.emoji_dict_utils import EMOJI_DESC_LIST
 import difflib
+import pyttsx3
 
 class EmojiSearchTab(wx.Panel):
     def __init__(self, parent):
@@ -34,9 +35,7 @@ class EmojiSearchTab(wx.Panel):
 
         self.SetSizer(self.main_sizer)
 
-        import pyttsx3
         self.tts_engine = pyttsx3.init()
-        self.tts_engine.setProperty('rate', self.tts_engine.getProperty('rate') - 80)
 
     def OnInputChanged(self, event):
         matches = [match.replace("_", " ") for match in get_matched_list(self.user_input.GetValue())]

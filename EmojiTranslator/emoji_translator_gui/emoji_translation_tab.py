@@ -1,11 +1,12 @@
 import wx
-from wx.lib.expando import ExpandoTextCtrl
 import emoji
-from emoji_translator_utils.emoji_dict_utils import *
+import pyttsx3
 import os
-
-FROM_TEXT_TO_EMOJI = 0
-FROM_EMOJI_TO_TEXT = 1
+import regex
+from emoji_translator_utils.emoji_dict_utils import *
+from wx.lib.expando import ExpandoTextCtrl
+from emoji_translator_gui.enums import *
+from emoji.core import *
 
 class EmojiTranslationTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
@@ -21,7 +22,7 @@ class EmojiTranslationTab(wx.Panel):
 
         self.translate_from = wx.StaticText(self, label="Text With Emojis")
         self.translate_to = wx.StaticText(self, label="Text Without Emojis")
-        self.translation_direction = FROM_EMOJI_TO_TEXT
+        self.translation_direction = TranslationDirection.FROM_EMOJI_TO_TEXT
 
         self.out_text = ExpandoTextCtrl(self,
                                         style=wx.TE_READONLY | wx.NO_BORDER)
@@ -39,24 +40,30 @@ class EmojiTranslationTab(wx.Panel):
         swap_bmp = swap_bmp.Rotate90()
         self.swap_button = wx.BitmapButton(self, bitmap=wx.Bitmap(swap_bmp), style=wx.BORDER_NONE)
         self.swap_button.Bind(wx.EVT_BUTTON, self.OnSwapTranslate)
-        self.swap_button.Bind(wx.EVT_MOTION, self.OnSwapMouseMotion)
         self.swap_button.Bind(wx.EVT_MOTION, self.OnInputChanged)
         self.swap_button.SetBackgroundColour(self.GetBackgroundColour())
+        self.swap_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+
+        self.tts_button = wx.Button(self, label="Text To Speech")
+        self.tts_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.tts_button.Bind(wx.EVT_BUTTON, self.OnTTS)
+
+        middle_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        middle_buttons_sizer.Add(self.swap_button, 1, wx.ALIGN_CENTER)
+        middle_buttons_sizer.Add(self.tts_button, 1, wx.ALIGN_RIGHT)
 
         self.main_sizer.Add(self.translate_from, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)
         self.main_sizer.Add(self.user_input, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 10)
-        self.main_sizer.Add(self.swap_button, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 10)
+        self.main_sizer.Add(middle_buttons_sizer, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, 10)
         self.main_sizer.Add(self.translate_to, 1, wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM|wx.RIGHT, 10)
         self.main_sizer.Add(self.out_text, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.RIGHT, 10)
 
         self.SetSizer(self.main_sizer)
 
-        import pyttsx3
         self.tts_engine = pyttsx3.init()
-        self.tts_engine.setProperty('rate', self.tts_engine.getProperty('rate') - 80)
 
     def OnInputChanged(self, event):
-        if self.translation_direction == FROM_EMOJI_TO_TEXT:
+        if self.translation_direction == TranslationDirection.FROM_EMOJI_TO_TEXT:
             self.out_text.SetValue(emoji.demojize(self.user_input.GetValue()))
         else:
             self.out_text.SetValue(emoji.emojize(self.user_input.GetValue(), use_aliases=True))
@@ -66,7 +73,11 @@ class EmojiTranslationTab(wx.Panel):
         to_label = self.translate_to.GetLabel()
         self.translate_from.SetLabel(to_label)
         self.translate_to.SetLabel(from_label)
-        self.translation_direction = not self.translation_direction
+        if self.translation_direction == TranslationDirection.FROM_TEXT_TO_EMOJI:
+            self.translation_direction = TranslationDirection.FROM_EMOJI_TO_TEXT
+        else:
+            self.translation_direction = TranslationDirection.FROM_TEXT_TO_EMOJI
 
-    def OnSwapMouseMotion(self, event):
-        self.swap_button.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+    def OnTTS(self, event):
+        self.tts_engine.say(tts_friendly_descriptions(self.out_text.GetValue()))
+        self.tts_engine.runAndWait()

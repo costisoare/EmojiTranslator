@@ -2,7 +2,8 @@
 # https://github.com/carpedm20/emoji/blob/master/emoji/unicode_codes.py
 # and slightly modified
 import os.path
-
+import regex
+from emoji.core import *
 # ------------------------------------------------------------------------------
 # ----------------------- MAIN EMOJI DICTIONARIES ------------------------------
 # ------------------------------------------------------------------------------
@@ -3975,6 +3976,17 @@ def unicode_to_filename(unicode, emoji_size, version="4.5"):
         return final_path
     else:
         return "FILE NOT FOUND"
+
+def tts_friendly_descriptions(text):
+    emoji_descs = regex.findall(
+        u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+%s)' % (":", ":"),
+        demojize(text))
+    to_speak = demojize(text)
+    for desc in emoji_descs:
+        new_desc = desc.replace(":", " ").replace("_", " ")
+        to_speak = to_speak.replace(desc, new_desc)
+
+    return to_speak
 
 # ------------------------------------------------------------------------------
 # --------------- ADDITIONAL CONVERTED DICTIONARIES ----------------------------

@@ -4,7 +4,7 @@ from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
-from emoji_translator_gui.supported_tabs import Tab
+from emoji_translator_gui.enums import *
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -76,9 +76,9 @@ class MainWindow(wx.Frame):
     def OnNewPress(self, event):
         if type(self.main_panel) is EmojiComposeTab:
             self.current_saved_composer_text = self.main_panel.editor.GetValue()
-        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == FROM_EMOJI_TO_TEXT:
+        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == TranslationDirection.FROM_EMOJI_TO_TEXT:
             self.current_saved_translation_text = self.main_panel.out_text.GetValue()
-        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == FROM_TEXT_TO_EMOJI:
+        elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == TranslationDirection.FROM_TEXT_TO_EMOJI:
             self.current_saved_translation_text = self.main_panel.user_input.GetValue()
         self.main_panel.Destroy()
         pressed_button = event.GetEventObject()
