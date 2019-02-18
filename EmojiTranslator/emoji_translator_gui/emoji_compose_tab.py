@@ -97,6 +97,7 @@ def recognize_emoji():
     r = sr.Recognizer()
     mic = sr.Microphone()
     with mic as source:
+        r.adjust_for_ambient_noise(source)
         audio = r.listen(source, phrase_time_limit=5)
 
     recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
