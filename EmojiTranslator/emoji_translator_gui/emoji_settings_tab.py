@@ -22,7 +22,7 @@ class EmojiSettingsTab(wx.Panel):
             if setting in [SettingsEnum.DB_EMOJI_SIZE, SettingsEnum.COMPOSER_EMOJI_SIZE]:
                 value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
             elif setting == SettingsEnum.SEARCH_TAB_FONT_SIZE:
-                font_sizes = list(map(str, range(6, 40)))
+                font_sizes = list(map(str, range(6, 41)))
                 value_gui = wx.ComboBox(self, choices=font_sizes)
 
             self.sizer.Add(value_gui, 0, wx.ALL, 5)
