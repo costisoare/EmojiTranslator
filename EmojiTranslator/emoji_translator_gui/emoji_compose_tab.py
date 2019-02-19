@@ -79,6 +79,10 @@ class ListeningThread(threading.Thread):
         self.parent = parent
 
     def run(self):
+        self.parent.parent.search_button.Disable()
+        self.parent.parent.db_button.Disable()
+        self.parent.parent.translate_button.Disable()
+        self.parent.parent.settings_button.Disable()
         try:
             matched = recognize_emoji()
             if len(matched) > 0:
@@ -94,6 +98,11 @@ class ListeningThread(threading.Thread):
         except sr.UnknownValueError:
             self.parent.stt_result.SetLabel("Nothing found.")
             self.parent.stt_button.Enable()
+        finally:
+            self.parent.parent.search_button.Enable()
+            self.parent.parent.db_button.Enable()
+            self.parent.parent.translate_button.Enable()
+            self.parent.parent.settings_button.Enable()
 
 def recognize_emoji():
     r = sr.Recognizer()
