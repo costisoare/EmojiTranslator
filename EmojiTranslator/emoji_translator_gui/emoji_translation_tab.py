@@ -7,7 +7,7 @@ from wx.lib.expando import ExpandoTextCtrl
 from emoji_translator_gui.enums import *
 
 class EmojiTranslationTab(wx.Panel):
-    def __init__(self, parent, saved_text=""):
+    def __init__(self, parent, saved_text="", translation_direction=TranslationDirection.FROM_EMOJI_TO_TEXT):
         wx.Panel.__init__(self, parent)
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
@@ -21,9 +21,14 @@ class EmojiTranslationTab(wx.Panel):
         self.main_sizer.AddGrowableRow(4)
         self.main_sizer.AddGrowableCol(0)
 
-        self.translate_from = wx.StaticText(self, label="Text With Emojis")
-        self.translate_to = wx.StaticText(self, label="Text Without Emojis")
-        self.translation_direction = TranslationDirection.FROM_EMOJI_TO_TEXT
+        if translation_direction == TranslationDirection.FROM_EMOJI_TO_TEXT:
+            self.translate_from = wx.StaticText(self, label="Text With Emojis")
+            self.translate_to = wx.StaticText(self, label="Text Without Emojis")
+        else:
+            self.translate_from = wx.StaticText(self, label="Text Without Emojis")
+            self.translate_to = wx.StaticText(self, label="Text With Emojis")
+
+        self.translation_direction = translation_direction
 
         self.out_text = ExpandoTextCtrl(self,
                                         style=wx.TE_READONLY | wx.NO_BORDER)

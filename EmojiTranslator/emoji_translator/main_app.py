@@ -61,6 +61,7 @@ class MainWindow(wx.Frame):
         self.SetSizer(self.sizer)
 
         self.current_saved_composer_text = ""
+        self.translation_direction = TranslationDirection.FROM_EMOJI_TO_TEXT
         self.current_saved_translation_text = ""
 
         self.Show(True)
@@ -70,7 +71,7 @@ class MainWindow(wx.Frame):
         if name == Tab.SEARCH.value:
             return EmojiSearchTab(self)
         elif name == Tab.TRANSLATE.value:
-            return EmojiTranslationTab(self, saved_text=self.current_saved_translation_text)
+            return EmojiTranslationTab(self, saved_text=self.current_saved_translation_text, translation_direction=self.translation_direction)
         elif name == Tab.DATABASE.value:
             return EmojiDBTab(self)
         elif name == Tab.COMPOSE.value:
@@ -83,8 +84,10 @@ class MainWindow(wx.Frame):
             self.current_saved_composer_text = self.main_panel.editor.GetValue()
         elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == TranslationDirection.FROM_EMOJI_TO_TEXT:
             self.current_saved_translation_text = self.main_panel.out_text.GetValue()
+            self.translation_direction = self.main_panel.translation_direction
         elif type(self.main_panel) is EmojiTranslationTab and self.main_panel.translation_direction == TranslationDirection.FROM_TEXT_TO_EMOJI:
             self.current_saved_translation_text = self.main_panel.user_input.GetValue()
+            self.translation_direction = self.main_panel.translation_direction
         self.main_panel.Destroy()
         pressed_button = event.GetEventObject()
         pressed_button.SetBackgroundColour((192, 192, 192))
