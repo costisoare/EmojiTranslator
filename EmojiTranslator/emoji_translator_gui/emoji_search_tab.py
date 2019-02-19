@@ -6,7 +6,11 @@ import pyttsx3
 class EmojiSearchTab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
-        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        self.parent = parent
+
+        self.user_settings = self.parent.user_settings
+
+        self.SetFont(wx.Font(self.user_settings.get_search_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
 
         self.main_sizer = wx.GridSizer(2, 1, 0, 0)
@@ -18,7 +22,6 @@ class EmojiSearchTab(wx.Panel):
         self.user_input = wx.ComboCtrl(self)
         self.user_input.SetPopupControl(EmojiSearchComboPopup())
         self.user_input.GetPopupControl().list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnDescClick)
-        self.user_input.SetFont(wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
 
         self.up_sizer.AddSpacer(50)

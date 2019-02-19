@@ -1,16 +1,18 @@
 import wx
-import regex
 import pyttsx3
 import speech_recognition as sr
 import threading
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_search_tab import get_matched_list
-from wx.adv import RichToolTip
 
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
+        self.parent = parent
+
+        self.user_settings = self.parent.user_settings
+
         self.SetBackgroundColour((255, 253, 208))
         self.compose_tab_sizer = wx.FlexGridSizer(4, 1, 0, 0)
 

@@ -4,11 +4,16 @@ from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
+from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.enums import *
+from login.settings import Settings
 
 class MainWindow(wx.Frame):
-    def __init__(self):
+    def __init__(self, username="guest"):
         wx.Frame.__init__(self, None, title="Emoji Translator")
+
+        self.username = username
+        self.user_settings = Settings(self.username)
 
         self.sizer = wx.FlexGridSizer(1, 2, 0, 0)
         self.sizer.AddGrowableRow(0)
@@ -71,7 +76,7 @@ class MainWindow(wx.Frame):
         elif name == Tab.COMPOSE.value:
             return EmojiComposeTab(self, saved_text=self.current_saved_composer_text)
         else:
-            return wx.Panel()
+            return EmojiSettingsTab(self)
 
     def OnNewPress(self, event):
         if type(self.main_panel) is EmojiComposeTab:

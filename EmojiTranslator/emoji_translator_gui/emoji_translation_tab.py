@@ -2,17 +2,18 @@ import wx
 import emoji
 import pyttsx3
 import os
-import regex
 from emoji_translator_utils.emoji_dict_utils import *
 from wx.lib.expando import ExpandoTextCtrl
 from emoji_translator_gui.enums import *
-from emoji.core import *
 
 class EmojiTranslationTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
+
+        self.parent = parent
+        self.user_settings = self.parent.user_settings
 
         self.main_sizer = wx.FlexGridSizer(5, 1, 0, 0)
 

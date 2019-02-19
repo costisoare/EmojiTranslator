@@ -9,6 +9,9 @@ class EmojiDBTab(wx.Panel):
     def __init__(self, parent, composer=False):
         wx.Panel.__init__(self, parent)
         self.parent = parent
+
+        self.user_settings = self.parent.user_settings
+
         self.SetBackgroundColour((255, 253, 208))
         self.emoji_categories = emoji_categs_from_file()
         self.emoji_categ_buttons = dict()
@@ -21,13 +24,13 @@ class EmojiDBTab(wx.Panel):
         self.emoji_bmps_panel = wx.Panel()
 
         self.composer = composer
-        self.emoji_button_size = 32 if self.composer else 64
 
         self.dbtab_sizer.Add(self.button_sizer, 1, wx.EXPAND)
         self.dbtab_sizer.AddSpacer(10)
 
         for cat in self.emoji_categories:
-            bmp_path = unicode_to_filename(STRING_UNICODE[self.emoji_categories[cat][0]], self.emoji_button_size)
+            bmp_path = unicode_to_filename(STRING_UNICODE[self.emoji_categories[cat][0]],
+                                           self.user_settings.get_composer_emoji_size() if self.composer else self.user_settings.get_db_emoji_size())
             self.emoji_categ_buttons[cat] = wx.BitmapToggleButton(self, label=wx.Bitmap(bmp_path),
                                                                   name=cat, style=wx.BORDER_NONE)
             self.emoji_categ_buttons[cat].Bind(wx.EVT_TOGGLEBUTTON, self.OnEmojiCategory)
@@ -66,7 +69,7 @@ class EmojiPanel(ScrolledPanel):
         self.SetupScrolling()
         self.Show(False)
         self.sizer = wx.GridSizer(len(category_list) / 8 + 1, 8, 15, 0)
-        self.emoji_size = 32 if self.parent.composer else 64
+        self.emoji_size = self.parent.user_settings.get_composer_emoji_size() if self.parent.composer else self.parent.user_settings.get_db_emoji_size()
         self.add_emojis_to_panel(category_list)
         self.sizer.SetRows(self.realnum_emojis / 8 + 1)
         self.SetSizer(self.sizer)
