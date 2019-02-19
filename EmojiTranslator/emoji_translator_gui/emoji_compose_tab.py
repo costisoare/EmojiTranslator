@@ -81,10 +81,11 @@ class ListeningThread(threading.Thread):
     def run(self):
         self.parent.parent.search_button.Disable()
         self.parent.parent.db_button.Disable()
+        self.parent.parent.composer_button.Disable()
         self.parent.parent.translate_button.Disable()
         self.parent.parent.settings_button.Disable()
         try:
-            matched = recognize_emoji()
+            matched = self.recognize_emoji()
             if len(matched) > 0:
                 self.parent.stt_result.SetLabel("Found: " + matched[0])
                 try:
@@ -101,20 +102,25 @@ class ListeningThread(threading.Thread):
         finally:
             self.parent.parent.search_button.Enable()
             self.parent.parent.db_button.Enable()
+            self.parent.parent.composer_button.Enable()
             self.parent.parent.translate_button.Enable()
             self.parent.parent.settings_button.Enable()
 
-def recognize_emoji():
-    r = sr.Recognizer()
-    mic = sr.Microphone()
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source, phrase_time_limit=5)
+    def recognize_emoji(self):
+        r = sr.Recognizer()
+        self.parent.stt_result.SetLabel("Microphone setup...")
+        mic = sr.Microphone()
+        with mic as source:
+            self.parent.stt_result.SetLabel("Adjusting for ambient noise...")
+            r.adjust_for_ambient_noise(source)
+            self.parent.stt_result.SetLabel("Listening...")
+            audio = r.listen(source, phrase_time_limit=5)
 
-    recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
-    #recognized_str = r.recognize_sphinx(audio)
+        self.parent.stt_result.SetLabel("Translating into emoji...")
+        recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
+        #recognized_str = r.recognize_sphinx(audio)
 
-    string_to_search = recognized_str.replace(".", "").lower()
-    return get_matched_list(string_to_search)
+        string_to_search = recognized_str.replace(".", "").lower()
+        return get_matched_list(string_to_search)
 
 

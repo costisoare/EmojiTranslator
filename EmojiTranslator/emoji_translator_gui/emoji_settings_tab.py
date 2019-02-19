@@ -25,7 +25,7 @@ class EmojiSettingsTab(wx.Panel):
                 font_sizes = list(map(str, range(6, 40)))
                 value_gui = wx.ComboBox(self, choices=font_sizes)
 
-            self.sizer.Add(value_gui, 1, wx.EXPAND)
+            self.sizer.Add(value_gui, 0, wx.ALL, 5)
             self.settings_value_gui_dict[setting] = value_gui
 
         self.apply_button = wx.Button(self, label="Apply")
@@ -38,10 +38,12 @@ class EmojiSettingsTab(wx.Panel):
         self.SetSizer(self.sizer)
 
     def OnApply(self, event):
+        applied_settings = 0
         for setting in self.settings_value_gui_dict:
             current_selection = self.settings_value_gui_dict[setting].GetStringSelection()
             if current_selection != "":
                 self.user_settings.settings_dict[setting] = int(current_selection)
-        self.apply_result.SetLabel("New settings applied!")
+                applied_settings += 1
+        self.apply_result.SetLabel(str(applied_settings) + " setting(s) applied!")
 
 
