@@ -1,5 +1,5 @@
 import wx
-from login.default_settings import SETTINGS
+from login.default_settings import *
 from emoji_translator_gui.enums import SettingsEnum
 
 class EmojiSettingsTab(wx.Panel):
@@ -11,29 +11,86 @@ class EmojiSettingsTab(wx.Panel):
         self.SetBackgroundColour((255, 253, 208))
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
-        self.sizer = wx.FlexGridSizer(len(SETTINGS.keys()) + 2, 2, 10, 10)
-        self.sizer.AddSpacer(15)
-        self.sizer.AddSpacer(15)
-
+        self.sizer = wx.FlexGridSizer(10, 1, 10, 10)
         self.settings_value_gui_dict = dict()
-        for setting in SETTINGS.keys():
-            self.sizer.Add(wx.StaticText(self, label=setting.value), 1, wx.ALIGN_LEFT)
 
-            if setting in [SettingsEnum.DB_EMOJI_SIZE, SettingsEnum.COMPOSER_EMOJI_SIZE]:
-                value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
-            elif setting == SettingsEnum.SEARCH_TAB_FONT_SIZE:
-                font_sizes = list(map(str, range(6, 41)))
-                value_gui = wx.ComboBox(self, choices=font_sizes)
+        title_font = self.GetFont()
+        title_font.SetUnderlined(True)
 
-            self.sizer.Add(value_gui, 0, wx.ALL, 5)
+        # ==================== SEARCH SETTINGS =================================
+        # set title
+        st = wx.StaticText(self, label="Search Tab Settings")
+        st.SetFont(title_font)
+        self.sizer.Add(st)
+
+        # set attributes
+        self.search_sizer = wx.GridSizer(1, 2, 10, 10)
+        for setting in SEARCH_SETTINGS:
+            self.search_sizer.Add(wx.StaticText(self, label=setting.value), 1, wx.ALIGN_LEFT)
+            value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
             self.settings_value_gui_dict[setting] = value_gui
+            self.search_sizer.Add(value_gui, 0, wx.ALL, 5)
 
+        self.sizer.Add(self.search_sizer, 1, wx.ALIGN_CENTER)
+
+        # ==================== DATABASE SETTINGS ===============================
+        # set title
+        st = wx.StaticText(self, label="Database Tab Settings")
+        st.SetFont(title_font)
+        self.sizer.Add(st)
+
+        # set attributes
+        self.db_sizer = wx.GridSizer(1, 2, 10, 10)
+        for setting in DB_SETTINGS:
+            self.db_sizer.Add(wx.StaticText(self, label=setting.value), 1,
+                                wx.ALIGN_LEFT)
+            value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
+            self.settings_value_gui_dict[setting] = value_gui
+            self.db_sizer.Add(value_gui, 0, wx.ALL, 5)
+
+        self.sizer.Add(self.db_sizer, 1, wx.ALIGN_CENTER)
+
+        # ==================== TRANSLATE SETTINGS ==============================
+        # set title
+        st = wx.StaticText(self, label="Translation Tab Settings")
+        st.SetFont(title_font)
+        self.sizer.Add(st)
+
+        # set attributes
+        self.translate_sizer = wx.GridSizer(1, 2, 10, 10)
+        for setting in TRANSLATE_SETTINGS:
+            self.translate_sizer.Add(wx.StaticText(self, label=setting.value), 1,
+                              wx.ALIGN_LEFT)
+            value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
+            self.settings_value_gui_dict[setting] = value_gui
+            self.translate_sizer.Add(value_gui, 0, wx.ALL, 5)
+
+        self.sizer.Add(self.translate_sizer, 1, wx.ALIGN_CENTER)
+
+        # ==================== COMPOSER SETTINGS ===============================
+        # set title
+        st = wx.StaticText(self, label="Composer Tab Settings")
+        st.SetFont(title_font)
+        self.sizer.Add(st)
+
+        # set attributes
+        self.compose_sizer = wx.GridSizer(1, 2, 10, 10)
+        for setting in COMPOSE_SETTINGS:
+            self.compose_sizer.Add(wx.StaticText(self, label=setting.value), 1,
+                              wx.ALIGN_LEFT)
+            value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
+            self.settings_value_gui_dict[setting] = value_gui
+            self.compose_sizer.Add(value_gui, 0, wx.ALL, 5)
+
+        self.sizer.Add(self.compose_sizer, 1, wx.ALIGN_CENTER)
+
+        # ===================== FINAL BUTTONS ==================================
         self.apply_button = wx.Button(self, label="Apply")
         self.apply_button.Bind(wx.EVT_BUTTON, self.OnApply)
-        self.sizer.Add(self.apply_button, 1, wx.ALIGN_CENTER)
+        self.sizer.Add(self.apply_button, 1, wx.ALIGN_CENTER|wx.ALL)
 
         self.apply_result = wx.StaticText(self, label="")
-        self.sizer.Add(self.apply_result, 1, wx.ALIGN_CENTER)
+        self.sizer.Add(self.apply_result, 1, wx.ALIGN_CENTER|wx.ALL)
 
         self.SetSizer(self.sizer)
 

@@ -11,26 +11,33 @@ class EmojiComposeTab(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.parent = parent
 
+        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+
         self.user_settings = self.parent.user_settings
+        self.user_profile = self.parent.user_profile
 
         self.SetBackgroundColour((255, 253, 208))
-        self.compose_tab_sizer = wx.FlexGridSizer(4, 1, 0, 0)
+        if self.user_profile["username"] == "guest":
+            self.compose_tab_sizer = wx.FlexGridSizer(4, 1, 0, 0)
+        else:
+            self.compose_tab_sizer = wx.FlexGridSizer(5, 1, 0, 0)
 
         self.compose_tab_sizer.AddGrowableRow(0, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(1, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(2, proportion=15)
-        self.compose_tab_sizer.AddGrowableRow(3, proportion=15)
+        if self.user_profile["username"] == "guest":
+            self.compose_tab_sizer.AddGrowableRow(3, proportion=15)
+        else:
+            self.compose_tab_sizer.AddGrowableRow(4, proportion=15)
         self.compose_tab_sizer.AddGrowableCol(0)
 
         self.top_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.tts_button = wx.Button(self, label="Text To Speech")
-        self.tts_button.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.tts_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
         self.tts_button.Bind(wx.EVT_BUTTON, self.OnTTS)
 
         self.stt_button = wx.Button(self, label="Speech To Text")
-        self.stt_button.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.stt_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
         self.stt_button.Bind(wx.EVT_BUTTON, self.OnSTT)
 
@@ -38,16 +45,22 @@ class EmojiComposeTab(wx.Panel):
         self.top_buttons_sizer.Add(self.stt_button, 1, wx.ALIGN_CENTER)
 
         self.editor = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-        self.editor.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.editor.SetValue(saved_text)
         self.emojis_tab = EmojiDBTab(self, composer=True)
 
         self.stt_result = wx.StaticText(self)
-        self.stt_result.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+
+        # this is only used if a user is logged in
+        self.save_button = wx.Button(self, label="Save Text")
+        self.save_button.Bind(wx.EVT_BUTTON, self.OnSave)
 
         self.compose_tab_sizer.Add(self.top_buttons_sizer, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.stt_result, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+        if self.user_profile["username"] != "guest":
+            self.compose_tab_sizer.Add(self.save_button, 1, wx.ALIGN_CENTER)
+        else:
+            self.save_button.Hide()
         self.compose_tab_sizer.Add(self.emojis_tab, 1, wx.EXPAND)
 
         self.editor.Bind(wx.EVT_TEXT, self.OnInputChanged)
@@ -72,6 +85,9 @@ class EmojiComposeTab(wx.Panel):
     def OnSTT(self, event):
         self.stt_button.Disable()
         ListeningThread(self).start()
+
+    def OnSave(self, event):
+        self.user_profile["saved_messages"].append(self.editor.GetValue())
 
 class ListeningThread(threading.Thread):
     def __init__(self, parent):

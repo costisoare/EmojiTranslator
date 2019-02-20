@@ -21,6 +21,7 @@ class LoginPanel(LoginPanelBase):
             self.logged_in = True
             from emoji_translator.main_app import MainWindow
             MainWindow(self.user.GetValue()).Show()
+            self.Close()
         else:
             self.result.SetForegroundColour((255, 0, 0))
             self.result.SetLabel("Invalid Login!")

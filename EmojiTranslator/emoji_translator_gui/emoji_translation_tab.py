@@ -9,11 +9,13 @@ from emoji_translator_gui.enums import *
 class EmojiTranslationTab(wx.Panel):
     def __init__(self, parent, saved_text="", translation_direction=TranslationDirection.FROM_EMOJI_TO_TEXT):
         wx.Panel.__init__(self, parent)
-        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        self.parent = parent
+        self.user_settings = self.parent.user_settings
+
+        self.SetFont(wx.Font(self.user_settings.get_translation_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour((255, 253, 208))
 
         self.parent = parent
-        self.user_settings = self.parent.user_settings
 
         self.main_sizer = wx.FlexGridSizer(5, 1, 0, 0)
 
@@ -33,10 +35,8 @@ class EmojiTranslationTab(wx.Panel):
         self.out_text = ExpandoTextCtrl(self,
                                         style=wx.TE_READONLY | wx.NO_BORDER)
         self.out_text.SetBackgroundColour(self.GetBackgroundColour())
-        self.out_text.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
         self.user_input = ExpandoTextCtrl(self)
-        self.user_input.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
         self.user_input.SetValue(saved_text)
 

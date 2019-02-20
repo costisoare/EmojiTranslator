@@ -1,5 +1,7 @@
 import wx
-
+import os
+import sys
+import pickle
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import *
@@ -13,7 +15,11 @@ class MainWindow(wx.Frame):
         wx.Frame.__init__(self, None, title="Emoji Translator")
 
         self.username = username
-        self.user_settings = Settings(self.username)
+        self.user_profile = self.get_user_profile()
+        self.user_settings = self.user_profile["settings"]
+        self.user_profile["settings"] = self.user_settings
+
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         self.sizer = wx.FlexGridSizer(1, 2, 0, 0)
         self.sizer.AddGrowableRow(0)
@@ -65,7 +71,7 @@ class MainWindow(wx.Frame):
         self.current_saved_translation_text = ""
 
         self.Show(True)
-        self.SetSize((wx.GetDisplaySize().width * 0.45, wx.GetDisplaySize().height * 0.9))
+        self.SetSize((wx.GetDisplaySize().width * 0.55, wx.GetDisplaySize().height * 0.9))
 
     def get_panel_by_name(self, name):
         if name == Tab.SEARCH.value:
@@ -101,6 +107,26 @@ class MainWindow(wx.Frame):
                 button.SetBackgroundColour(self.buttons_panel.GetBackgroundColour())
         self.sizer.Add(self.main_panel, 1, wx.EXPAND)
         self.Layout()
+
+    def OnClose(self, event):
+        if self.username != "guest":
+            profile_path = os.path.join(os.getcwd(), "..",
+                                        self.username + ".pickle")
+            with open(profile_path, 'wb') as f:
+                pickle.dump(self.user_profile, f, protocol=pickle.HIGHEST_PROTOCOL)
+        event.Skip()
+
+    def get_user_profile(self):
+        profile_path = os.path.join(os.getcwd(), "..", self.username + ".pickle")
+        if os.path.isfile(profile_path):
+            with open(profile_path, 'rb') as f:
+                return pickle.load(f)
+        else:
+            return dict({
+                "username" : self.username,
+                "settings" : Settings(self.username),
+                "saved_messages" : list()
+            })
 
 if __name__ == "__main__":
     app = wx.App(False)

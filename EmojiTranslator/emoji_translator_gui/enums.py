@@ -14,4 +14,5 @@ class TranslationDirection(enum.Enum):
 class SettingsEnum(enum.Enum):
     DB_EMOJI_SIZE = "db_emoji_size"
     COMPOSER_EMOJI_SIZE = "composer_emoji_size"
-    SEARCH_TAB_FONT_SIZE = "search_tab_font"
+    SEARCH_TAB_FONT_SIZE = "search_tab_font_size"
+    TRANSLATION_TAB_FONT_SIZE = "translation_tab_font_size"
