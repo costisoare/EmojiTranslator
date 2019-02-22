@@ -76,7 +76,7 @@ class EmojiSearchTab(wx.Panel):
         self.tts_engine.runAndWait()
 
 
-def get_matched_list(input_str, cutoff=0.6):
-    return sorted(difflib.get_close_matches(input_str, EMOJI_DESC_LIST, 9, cutoff=cutoff),
+def get_matched_list(input_str, cutoff=0.6, emoji_list=EMOJI_DESC_LIST):
+    return sorted(difflib.get_close_matches(input_str, emoji_list, 9, cutoff=cutoff),
                   key=lambda x: difflib.SequenceMatcher(None, x, input_str).ratio(),
                   reverse=True)

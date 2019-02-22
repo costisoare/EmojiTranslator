@@ -5,4 +5,7 @@
 **/UsefulLogos
 */venv
 **/.idea
-**/__pycache__
+EmojiTranslator/__pycache__/*
+EmojiTranslator/user_profiles/*
+**/__pycache__/*
+EmojiTranslator/emoji_translator_gui/__pycache__/*

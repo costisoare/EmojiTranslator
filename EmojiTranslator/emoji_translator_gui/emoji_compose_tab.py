@@ -18,17 +18,19 @@ class EmojiComposeTab(wx.Panel):
 
         self.SetBackgroundColour((255, 253, 208))
         if self.user_profile["username"] == "guest":
-            self.compose_tab_sizer = wx.FlexGridSizer(4, 1, 0, 0)
-        else:
             self.compose_tab_sizer = wx.FlexGridSizer(5, 1, 0, 0)
+        else:
+            self.compose_tab_sizer = wx.FlexGridSizer(6, 1, 0, 0)
 
         self.compose_tab_sizer.AddGrowableRow(0, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(1, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(2, proportion=15)
         if self.user_profile["username"] == "guest":
-            self.compose_tab_sizer.AddGrowableRow(3, proportion=15)
-        else:
+            self.compose_tab_sizer.AddGrowableRow(3, proportion=1)
             self.compose_tab_sizer.AddGrowableRow(4, proportion=15)
+        else:
+            self.compose_tab_sizer.AddGrowableRow(4, proportion=1)
+            self.compose_tab_sizer.AddGrowableRow(5, proportion=15)
         self.compose_tab_sizer.AddGrowableCol(0)
 
         self.top_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -55,13 +57,42 @@ class EmojiComposeTab(wx.Panel):
         self.save_button.Bind(wx.EVT_BUTTON, self.OnSave)
         self.save_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
 
+        # 3 autocomplete options
+        self.auto_complete_options = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.auto_comp_opt1 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt1.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
+        self.auto_comp_opt1.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
+        self.auto_comp_opt1.SetBackgroundColour(self.GetBackgroundColour())
+        self.auto_comp_opt1.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.auto_complete_options.Add(self.auto_comp_opt1, 1, wx.ALIGN_CENTER)
+        self.auto_complete_options.AddSpacer(20)
+
+        self.auto_comp_opt2 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt2.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
+        self.auto_comp_opt2.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
+        self.auto_comp_opt2.SetBackgroundColour(self.GetBackgroundColour())
+        self.auto_comp_opt2.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.auto_complete_options.Add(self.auto_comp_opt2, 1, wx.ALIGN_CENTER)
+        self.auto_complete_options.AddSpacer(20)
+
+        self.auto_comp_opt3 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt3.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
+        self.auto_comp_opt3.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
+        self.auto_comp_opt3.SetBackgroundColour(self.GetBackgroundColour())
+        self.auto_comp_opt3.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.auto_complete_options.Add(self.auto_comp_opt3, 1, wx.ALIGN_CENTER)
+
         self.compose_tab_sizer.Add(self.top_buttons_sizer, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.stt_result, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+
         if self.user_profile["username"] != "guest":
             self.compose_tab_sizer.Add(self.save_button, 1, wx.ALIGN_CENTER)
         else:
             self.save_button.Hide()
+
+        self.compose_tab_sizer.Add(self.auto_complete_options, 1, wx.ALIGN_CENTER)
         self.compose_tab_sizer.Add(self.emojis_tab, 1, wx.EXPAND)
 
         self.editor.Bind(wx.EVT_TEXT, self.OnInputChanged)
@@ -75,9 +106,36 @@ class EmojiComposeTab(wx.Panel):
         self.editor.AppendText(unicode)
 
     def OnInputChanged(self, event):
+        text = self.editor.GetValue()
+        emoji_descs = regex.findall(
+            u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+)' % ":",
+            text)
+        if len(emoji_descs) > 0 and len(emoji_descs[-1]) > 2:
+            to_autocomplete = emoji_descs[-1].replace(":", "")
+            matches = get_matched_list(to_autocomplete, emoji_list=EMOJI_DESC_LIST)
+            if len(matches) > 0:
+                self.auto_comp_opt1.SetLabel(matches[0])
+            else:
+                self.auto_comp_opt1.SetLabel("")
+                self.auto_comp_opt2.SetLabel("")
+                self.auto_comp_opt3.SetLabel("")
+            if len(matches) > 1:
+                self.auto_comp_opt2.SetLabel(matches[1])
+            else:
+                self.auto_comp_opt2.SetLabel("")
+                self.auto_comp_opt3.SetLabel("")
+            if len(matches) > 2:
+                self.auto_comp_opt3.SetLabel(matches[2])
+            else:
+                self.auto_comp_opt3.SetLabel("")
+        else:
+            self.auto_comp_opt1.SetLabel("")
+            self.auto_comp_opt2.SetLabel("")
+            self.auto_comp_opt3.SetLabel("")
         current_insertion_point = self.editor.GetInsertionPoint()
         self.editor.ChangeValue(emojize(self.editor.GetValue(), use_aliases=True))
         self.editor.SetInsertionPoint(current_insertion_point)
+        self.Layout()
 
     def OnTTS(self, event):
         self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
@@ -92,6 +150,17 @@ class EmojiComposeTab(wx.Panel):
         text = self.editor.GetValue()
         if text != "":
             self.user_profile["saved_messages"].append(text)
+
+    def OnPressAutoCorrect(self, event):
+        text = self.editor.GetValue()
+        to_replace = regex.findall(
+            u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+)' % ":",
+            text)[-1]
+        self.editor.SetValue(self.editor.GetValue().replace(to_replace, ":" + event.GetEventObject().GetLabel() + ":"))
+        self.auto_comp_opt1.SetLabel("")
+        self.auto_comp_opt2.SetLabel("")
+        self.auto_comp_opt3.SetLabel("")
+        self.Layout()
 
 class ListeningThread(threading.Thread):
     def __init__(self, parent):
