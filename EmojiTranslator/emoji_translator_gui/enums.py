@@ -16,3 +16,5 @@ class SettingsEnum(enum.Enum):
     COMPOSER_EMOJI_SIZE = "composer_emoji_size"
     SEARCH_TAB_FONT_SIZE = "search_tab_font_size"
     TRANSLATION_TAB_FONT_SIZE = "translation_tab_font_size"
+    COMPOSER_TAB_FONT_SIZE = "composer_tab_font_size"
+    TTS_SPEED = "tts_speed"

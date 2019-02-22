@@ -10,10 +10,10 @@ class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
         self.parent = parent
-
-        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
-
         self.user_settings = self.parent.user_settings
+
+        self.SetFont(wx.Font(self.user_settings.get_composer_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+
         self.user_profile = self.parent.user_profile
 
         self.SetBackgroundColour((255, 253, 208))
@@ -53,6 +53,7 @@ class EmojiComposeTab(wx.Panel):
         # this is only used if a user is logged in
         self.save_button = wx.Button(self, label="Save Text")
         self.save_button.Bind(wx.EVT_BUTTON, self.OnSave)
+        self.save_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
 
         self.compose_tab_sizer.Add(self.top_buttons_sizer, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.stt_result, 1, wx.EXPAND)
@@ -79,6 +80,7 @@ class EmojiComposeTab(wx.Panel):
         self.editor.SetInsertionPoint(current_insertion_point)
 
     def OnTTS(self, event):
+        self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
         self.tts_engine.say(tts_friendly_descriptions(self.editor.GetValue()))
         self.tts_engine.runAndWait()
 
@@ -87,7 +89,9 @@ class EmojiComposeTab(wx.Panel):
         ListeningThread(self).start()
 
     def OnSave(self, event):
-        self.user_profile["saved_messages"].append(self.editor.GetValue())
+        text = self.editor.GetValue()
+        if text != "":
+            self.user_profile["saved_messages"].append(text)
 
 class ListeningThread(threading.Thread):
     def __init__(self, parent):

@@ -85,5 +85,6 @@ class EmojiTranslationTab(wx.Panel):
             self.translation_direction = TranslationDirection.FROM_TEXT_TO_EMOJI
 
     def OnTTS(self, event):
+        self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
         self.tts_engine.say(tts_friendly_descriptions(self.out_text.GetValue()))
         self.tts_engine.runAndWait()

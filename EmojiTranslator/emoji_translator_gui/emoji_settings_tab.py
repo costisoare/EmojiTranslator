@@ -11,11 +11,28 @@ class EmojiSettingsTab(wx.Panel):
         self.SetBackgroundColour((255, 253, 208))
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
-        self.sizer = wx.FlexGridSizer(10, 1, 10, 10)
+        self.sizer = wx.FlexGridSizer(12, 1, 10, 10)
         self.settings_value_gui_dict = dict()
 
         title_font = self.GetFont()
         title_font.SetUnderlined(True)
+
+        # ==================== GENERAL SETTINGS ================================
+        # set title
+        st = wx.StaticText(self, label="General Settings")
+        st.SetFont(title_font)
+        self.sizer.Add(st)
+
+        # set attributes
+        self.gen_set_sizer = wx.GridSizer(len(GENERAL_SETTINGS), 2, 10, 10)
+        for setting in GENERAL_SETTINGS:
+            self.gen_set_sizer.Add(wx.StaticText(self, label=setting.value), 1,
+                                  wx.ALIGN_LEFT)
+            value_gui = wx.ComboBox(self, choices=list(["slow", "normal", "fast"]))
+            self.settings_value_gui_dict[setting] = value_gui
+            self.gen_set_sizer.Add(value_gui, 0, wx.ALL, 5)
+
+        self.sizer.Add(self.gen_set_sizer, 1, wx.ALIGN_CENTER)
 
         # ==================== SEARCH SETTINGS =================================
         # set title
@@ -24,7 +41,7 @@ class EmojiSettingsTab(wx.Panel):
         self.sizer.Add(st)
 
         # set attributes
-        self.search_sizer = wx.GridSizer(1, 2, 10, 10)
+        self.search_sizer = wx.GridSizer(len(SEARCH_SETTINGS), 2, 10, 10)
         for setting in SEARCH_SETTINGS:
             self.search_sizer.Add(wx.StaticText(self, label=setting.value), 1, wx.ALIGN_LEFT)
             value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
@@ -40,7 +57,7 @@ class EmojiSettingsTab(wx.Panel):
         self.sizer.Add(st)
 
         # set attributes
-        self.db_sizer = wx.GridSizer(1, 2, 10, 10)
+        self.db_sizer = wx.GridSizer(len(DB_SETTINGS), 2, 10, 10)
         for setting in DB_SETTINGS:
             self.db_sizer.Add(wx.StaticText(self, label=setting.value), 1,
                                 wx.ALIGN_LEFT)
@@ -57,7 +74,7 @@ class EmojiSettingsTab(wx.Panel):
         self.sizer.Add(st)
 
         # set attributes
-        self.translate_sizer = wx.GridSizer(1, 2, 10, 10)
+        self.translate_sizer = wx.GridSizer(len(TRANSLATE_SETTINGS), 2, 10, 10)
         for setting in TRANSLATE_SETTINGS:
             self.translate_sizer.Add(wx.StaticText(self, label=setting.value), 1,
                               wx.ALIGN_LEFT)
@@ -74,11 +91,14 @@ class EmojiSettingsTab(wx.Panel):
         self.sizer.Add(st)
 
         # set attributes
-        self.compose_sizer = wx.GridSizer(1, 2, 10, 10)
+        self.compose_sizer = wx.GridSizer(len(COMPOSE_SETTINGS), 2, 10, 10)
         for setting in COMPOSE_SETTINGS:
             self.compose_sizer.Add(wx.StaticText(self, label=setting.value), 1,
                               wx.ALIGN_LEFT)
-            value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
+            if setting == SettingsEnum.COMPOSER_EMOJI_SIZE:
+                value_gui = wx.ComboBox(self, choices=["32", "64", "128"])
+            elif setting == SettingsEnum.COMPOSER_TAB_FONT_SIZE:
+                value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
             self.settings_value_gui_dict[setting] = value_gui
             self.compose_sizer.Add(value_gui, 0, wx.ALL, 5)
 
@@ -99,7 +119,10 @@ class EmojiSettingsTab(wx.Panel):
         for setting in self.settings_value_gui_dict:
             current_selection = self.settings_value_gui_dict[setting].GetStringSelection()
             if current_selection != "":
-                self.user_settings.settings_dict[setting] = int(current_selection)
+                if setting != SettingsEnum.TTS_SPEED:
+                    self.user_settings.settings_dict[setting] = int(current_selection)
+                else:
+                    self.user_settings.settings_dict[setting] = current_selection
                 applied_settings += 1
         self.apply_result.SetLabel(str(applied_settings) + " setting(s) applied!")
 

@@ -110,14 +110,16 @@ class MainWindow(wx.Frame):
 
     def OnClose(self, event):
         if self.username != "guest":
-            profile_path = os.path.join(os.getcwd(), "..",
+            profile_path = os.path.join(os.getcwd(), "../user_profiles",
                                         self.username + ".pickle")
+            if not os.path.exists(os.path.join(os.getcwd(), "../user_profiles")):
+                os.makedirs(os.path.join(os.getcwd(), "../user_profiles"))
             with open(profile_path, 'wb') as f:
                 pickle.dump(self.user_profile, f, protocol=pickle.HIGHEST_PROTOCOL)
         event.Skip()
 
     def get_user_profile(self):
-        profile_path = os.path.join(os.getcwd(), "..", self.username + ".pickle")
+        profile_path = os.path.join(os.getcwd(), "../user_profiles", self.username + ".pickle")
         if os.path.isfile(profile_path):
             with open(profile_path, 'rb') as f:
                 return pickle.load(f)
