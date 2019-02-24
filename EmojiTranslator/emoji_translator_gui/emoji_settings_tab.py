@@ -8,7 +8,7 @@ class EmojiSettingsTab(wx.Panel):
         self.parent = parent
         self.user_settings = self.parent.user_settings
 
-        self.SetBackgroundColour((255, 253, 208))
+        self.SetBackgroundColour(self.user_settings.get_background_color())
         self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
         self.sizer = wx.FlexGridSizer(12, 1, 10, 10)
@@ -28,7 +28,10 @@ class EmojiSettingsTab(wx.Panel):
         for setting in GENERAL_SETTINGS:
             self.gen_set_sizer.Add(wx.StaticText(self, label=setting.value), 1,
                                   wx.ALIGN_LEFT)
-            value_gui = wx.ComboBox(self, choices=list(["slow", "normal", "fast"]))
+            if setting == SettingsEnum.TTS_SPEED:
+                value_gui = wx.ComboBox(self, choices=list(["slow", "normal", "fast"]))
+            else:
+                value_gui = wx.ColourPickerCtrl(self, colour=self.user_settings.get_background_color())
             self.settings_value_gui_dict[setting] = value_gui
             self.gen_set_sizer.Add(value_gui, 0, wx.ALL, 5)
 
@@ -117,12 +120,17 @@ class EmojiSettingsTab(wx.Panel):
     def OnApply(self, event):
         applied_settings = 0
         for setting in self.settings_value_gui_dict:
-            current_selection = self.settings_value_gui_dict[setting].GetStringSelection()
-            if current_selection != "":
-                if setting != SettingsEnum.TTS_SPEED:
-                    self.user_settings.settings_dict[setting] = int(current_selection)
-                else:
-                    self.user_settings.settings_dict[setting] = current_selection
+            if type(self.settings_value_gui_dict[setting]) is wx.ComboBox:
+                current_selection = self.settings_value_gui_dict[setting].GetStringSelection()
+                if current_selection != "":
+                    if setting != SettingsEnum.TTS_SPEED:
+                        self.user_settings.settings_dict[setting] = int(current_selection)
+                    else:
+                        self.user_settings.settings_dict[setting] = current_selection
+                    applied_settings += 1
+            else:
+                color = self.settings_value_gui_dict[setting].GetColour()
+                self.user_settings.settings_dict[setting] = color.Get()
                 applied_settings += 1
         self.apply_result.SetLabel(str(applied_settings) + " setting(s) applied!")
 

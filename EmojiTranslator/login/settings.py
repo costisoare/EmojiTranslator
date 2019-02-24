@@ -1,5 +1,6 @@
 from login.default_settings import SETTINGS
 from emoji_translator_gui.enums import SettingsEnum
+import wx
 
 class Settings(object):
     def __init__(self, username="guest"):
@@ -32,6 +33,9 @@ class Settings(object):
 
     def get_composer_tab_font_size(self):
         return self.settings_dict.get(SettingsEnum.COMPOSER_TAB_FONT_SIZE)
+
+    def get_background_color(self):
+        return wx.Colour(*self.settings_dict.get(SettingsEnum.BACKGROUND_COLOR))
 
     def get_tts_speed(self):
         speed_str = self.settings_dict.get(SettingsEnum.TTS_SPEED)

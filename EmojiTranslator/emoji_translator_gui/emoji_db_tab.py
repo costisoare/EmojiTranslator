@@ -12,7 +12,7 @@ class EmojiDBTab(wx.Panel):
 
         self.user_settings = self.parent.user_settings
 
-        self.SetBackgroundColour((255, 253, 208))
+        self.SetBackgroundColour(self.user_settings.get_background_color())
         self.emoji_categories = emoji_categs_from_file()
         self.emoji_categ_buttons = dict()
 

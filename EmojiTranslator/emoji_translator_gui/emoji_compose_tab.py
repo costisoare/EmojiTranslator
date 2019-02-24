@@ -16,7 +16,7 @@ class EmojiComposeTab(wx.Panel):
 
         self.user_profile = self.parent.user_profile
 
-        self.SetBackgroundColour((255, 253, 208))
+        self.SetBackgroundColour(self.user_settings.get_background_color())
         if self.user_profile["username"] == "guest":
             self.compose_tab_sizer = wx.FlexGridSizer(5, 1, 0, 0)
         else:

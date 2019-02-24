@@ -6,11 +6,13 @@ SETTINGS = dict({
     SettingsEnum.DB_EMOJI_SIZE : 64,
     SettingsEnum.COMPOSER_EMOJI_SIZE : 32,
     SettingsEnum.COMPOSER_TAB_FONT_SIZE : 15,
-    SettingsEnum.TTS_SPEED : 120
+    SettingsEnum.TTS_SPEED : 120,
+    SettingsEnum.BACKGROUND_COLOR : (255, 253, 208)
 })
 
 GENERAL_SETTINGS = list([
-    SettingsEnum.TTS_SPEED
+    SettingsEnum.TTS_SPEED,
+    SettingsEnum.BACKGROUND_COLOR
 ])
 
 SEARCH_SETTINGS = list([
