@@ -6,6 +6,12 @@ class Settings(object):
         self.username = username
         self.settings_dict = self.get_default_settings()
 
+    def __eq__(self, other):
+        return (self.username == other.username and self.settings_dict == other.settings_dict)
+
+    def __repr__(self):
+        return str(self.settings_dict)
+
     def get_default_settings(self):
         return SETTINGS
 

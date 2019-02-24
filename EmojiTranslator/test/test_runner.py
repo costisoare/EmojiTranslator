@@ -2,7 +2,8 @@ import unittest
 
 testmodules = [
     'test_dict_utils',
-    'test_search'
+    'test_search',
+    'test_user_profile_actions'
 ]
 
 suite = unittest.TestSuite()

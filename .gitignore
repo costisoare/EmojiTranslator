@@ -6,4 +6,5 @@
 */venv
 **/.idea
 EmojiTranslator/user_profiles/*
+EmojiTranslator/test/*/*.pickle
 **/__pycache__/*

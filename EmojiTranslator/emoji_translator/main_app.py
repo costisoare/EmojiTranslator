@@ -15,7 +15,7 @@ class MainWindow(wx.Frame):
         wx.Frame.__init__(self, None, title="Emoji Translator")
 
         self.username = username
-        self.user_profile = self.get_user_profile()
+        self.user_profile = get_user_profile(self.username)
         self.user_settings = self.user_profile["settings"]
         self.user_profile["settings"] = self.user_settings
 
@@ -110,25 +110,28 @@ class MainWindow(wx.Frame):
 
     def OnClose(self, event):
         if self.username != "guest":
-            profile_path = os.path.join(os.getcwd(), "../user_profiles",
-                                        self.username + ".pickle")
-            if not os.path.exists(os.path.join(os.getcwd(), "../user_profiles")):
-                os.makedirs(os.path.join(os.getcwd(), "../user_profiles"))
-            with open(profile_path, 'wb') as f:
-                pickle.dump(self.user_profile, f, protocol=pickle.HIGHEST_PROTOCOL)
+            save_user_profile(self.username, self.user_profile)
         event.Skip()
 
-    def get_user_profile(self):
-        profile_path = os.path.join(os.getcwd(), "../user_profiles", self.username + ".pickle")
-        if os.path.isfile(profile_path):
-            with open(profile_path, 'rb') as f:
-                return pickle.load(f)
-        else:
-            return dict({
-                "username" : self.username,
-                "settings" : Settings(self.username),
-                "saved_messages" : list()
-            })
+def save_user_profile(username, user_profile, profile_dir="../user_profiles"):
+   profile_path = os.path.join(os.getcwd(), profile_dir,
+                               username + ".pickle")
+   if not os.path.exists(os.path.join(os.getcwd(), profile_dir)):
+       os.makedirs(os.path.join(os.getcwd(), profile_dir))
+   with open(profile_path, 'wb') as f:
+       pickle.dump(user_profile, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+def get_user_profile(username, profile_dir="../user_profiles"):
+    profile_path = os.path.join(os.getcwd(), profile_dir, username + ".pickle")
+    if os.path.isfile(profile_path):
+        with open(profile_path, 'rb') as f:
+            return pickle.load(f)
+    else:
+        return dict({
+            "username" : username,
+            "settings" : Settings(username),
+            "saved_messages" : list()
+        })
 
 if __name__ == "__main__":
     app = wx.App(False)
