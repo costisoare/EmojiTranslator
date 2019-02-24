@@ -60,7 +60,7 @@ class EmojiComposeTab(wx.Panel):
         # 3 autocomplete options
         self.auto_complete_options = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.auto_comp_opt1 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt1 = wx.Button(self, style=wx.BORDER_NONE|wx.BU_EXACTFIT)
         self.auto_comp_opt1.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
         self.auto_comp_opt1.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
         self.auto_comp_opt1.SetBackgroundColour(self.GetBackgroundColour())
@@ -68,7 +68,7 @@ class EmojiComposeTab(wx.Panel):
         self.auto_complete_options.Add(self.auto_comp_opt1, 1, wx.ALIGN_CENTER)
         self.auto_complete_options.AddSpacer(20)
 
-        self.auto_comp_opt2 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt2 = wx.Button(self, style=wx.BORDER_NONE|wx.BU_EXACTFIT)
         self.auto_comp_opt2.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
         self.auto_comp_opt2.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
         self.auto_comp_opt2.SetBackgroundColour(self.GetBackgroundColour())
@@ -76,7 +76,7 @@ class EmojiComposeTab(wx.Panel):
         self.auto_complete_options.Add(self.auto_comp_opt2, 1, wx.ALIGN_CENTER)
         self.auto_complete_options.AddSpacer(20)
 
-        self.auto_comp_opt3 = wx.Button(self, label="", style=wx.BORDER_NONE|wx.BU_EXACTFIT)
+        self.auto_comp_opt3 = wx.Button(self, style=wx.BORDER_NONE|wx.BU_EXACTFIT)
         self.auto_comp_opt3.Bind(wx.EVT_BUTTON, self.OnPressAutoCorrect)
         self.auto_comp_opt3.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, True, u'Consolas'))
         self.auto_comp_opt3.SetBackgroundColour(self.GetBackgroundColour())
@@ -110,28 +110,25 @@ class EmojiComposeTab(wx.Panel):
         emoji_descs = regex.findall(
             u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+)' % ":",
             text)
+        self.auto_comp_opt1.SetLabel("")
+        self.auto_comp_opt1.Hide()
+        self.auto_comp_opt2.SetLabel("")
+        self.auto_comp_opt2.Hide()
+        self.auto_comp_opt3.SetLabel("")
+        self.auto_comp_opt3.Hide()
         if len(emoji_descs) > 0 and len(emoji_descs[-1]) > 2:
             to_autocomplete = emoji_descs[-1].replace(":", "")
             matches = get_matched_list(to_autocomplete, emoji_list=EMOJI_DESC_LIST)
             if len(matches) > 0:
                 self.auto_comp_opt1.SetLabel(matches[0])
-            else:
-                self.auto_comp_opt1.SetLabel("")
-                self.auto_comp_opt2.SetLabel("")
-                self.auto_comp_opt3.SetLabel("")
+                self.auto_comp_opt1.Show()
             if len(matches) > 1:
                 self.auto_comp_opt2.SetLabel(matches[1])
-            else:
-                self.auto_comp_opt2.SetLabel("")
-                self.auto_comp_opt3.SetLabel("")
+                self.auto_comp_opt2.Show()
             if len(matches) > 2:
                 self.auto_comp_opt3.SetLabel(matches[2])
-            else:
-                self.auto_comp_opt3.SetLabel("")
-        else:
-            self.auto_comp_opt1.SetLabel("")
-            self.auto_comp_opt2.SetLabel("")
-            self.auto_comp_opt3.SetLabel("")
+                self.auto_comp_opt3.Show()
+
         current_insertion_point = self.editor.GetInsertionPoint()
         self.editor.ChangeValue(emojize(self.editor.GetValue(), use_aliases=True))
         self.editor.SetInsertionPoint(current_insertion_point)
