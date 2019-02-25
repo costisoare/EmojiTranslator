@@ -130,7 +130,7 @@ def get_user_profile(username, profile_dir="../user_profiles"):
         return dict({
             "username" : username,
             "settings" : Settings(username),
-            "saved_messages" : list()
+            "saved_messages" : set()
         })
 
 if __name__ == "__main__":

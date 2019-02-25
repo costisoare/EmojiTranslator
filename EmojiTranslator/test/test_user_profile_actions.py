@@ -12,7 +12,7 @@ class TestUserProfile(unittest.TestCase):
         self.test_profile = dict({
                 "username" : self.username,
                 "settings" : Settings(self.username),
-                "saved_messages" : list()
+                "saved_messages" : set()
         })
 
     def test_save_empty_user_profile(self):
@@ -28,7 +28,7 @@ class TestUserProfile(unittest.TestCase):
     def test_changed_user_profile(self):
         self.test_profile["username"] = "modified"
         self.username = self.test_profile["username"]
-        self.test_profile["saved_messages"].append("this is a new message")
+        self.test_profile["saved_messages"].add("this is a new message")
         self.test_profile["settings"].settings_dict[SettingsEnum.COMPOSER_TAB_FONT_SIZE] = 25
         save_user_profile(self.username, self.test_profile,
                           profile_dir=self.profile_dir)

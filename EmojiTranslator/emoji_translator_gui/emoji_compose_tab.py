@@ -53,9 +53,14 @@ class EmojiComposeTab(wx.Panel):
         self.stt_result = wx.StaticText(self)
 
         # this is only used if a user is logged in
+        self.save_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.save_button = wx.Button(self, label="Save Text")
         self.save_button.Bind(wx.EVT_BUTTON, self.OnSave)
         self.save_button.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+        self.save_response = wx.StaticText(self)
+        self.save_sizer.Add(self.save_button, 1, wx.ALIGN_CENTER)
+        self.save_sizer.AddSpacer(20)
+        self.save_sizer.Add(self.save_response, 1, wx.ALIGN_CENTER)
 
         # 3 autocomplete options
         self.auto_complete_options = wx.BoxSizer(wx.HORIZONTAL)
@@ -88,7 +93,7 @@ class EmojiComposeTab(wx.Panel):
         self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
 
         if self.user_profile["username"] != "guest":
-            self.compose_tab_sizer.Add(self.save_button, 1, wx.ALIGN_CENTER)
+            self.compose_tab_sizer.Add(self.save_sizer, 1, wx.ALIGN_CENTER)
         else:
             self.save_button.Hide()
 
@@ -144,9 +149,14 @@ class EmojiComposeTab(wx.Panel):
         ListeningThread(self).start()
 
     def OnSave(self, event):
-        text = self.editor.GetValue()
-        if text != "":
-            self.user_profile["saved_messages"].append(text)
+        self.save_response.SetLabel("")
+        try:
+            text = self.editor.GetValue()
+            if text != "":
+                self.user_profile["saved_messages"].add(text)
+                self.save_response.SetLabel("Text has been saved!")
+        except:
+            self.save_response.SetLabel("Text could not be saved...")
 
     def OnPressAutoCorrect(self, event):
         text = self.editor.GetValue()
@@ -154,9 +164,9 @@ class EmojiComposeTab(wx.Panel):
             u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+)' % ":",
             text)[-1]
         self.editor.SetValue(self.editor.GetValue().replace(to_replace, ":" + event.GetEventObject().GetLabel() + ":"))
-        self.auto_comp_opt1.SetLabel("")
-        self.auto_comp_opt2.SetLabel("")
-        self.auto_comp_opt3.SetLabel("")
+        self.auto_comp_opt1.Hide()
+        self.auto_comp_opt2.Hide()
+        self.auto_comp_opt3.Hide()
         self.Layout()
 
 class ListeningThread(threading.Thread):
