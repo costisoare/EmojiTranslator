@@ -2,9 +2,10 @@ import wx
 from wx.adv import RichToolTip
 from emoji_translator_utils.emoji_dict_utils import *
 
-class EmojiSearchComboPopup(wx.ComboPopup):
-    def __init__(self):
+class EmojiComboPopup(wx.ComboPopup):
+    def __init__(self, parent):
         wx.ComboPopup.__init__(self)
+        self.parent = parent
         self.list_ctrl = None
 
     def AddItem(self, txt):
@@ -25,7 +26,6 @@ class EmojiSearchComboPopup(wx.ComboPopup):
 
     # The following methods are those that are overridable from the
     # ComboPopup base class.
-
     def Init(self):
         self.value = -1
         self.curitem = -1
@@ -34,8 +34,7 @@ class EmojiSearchComboPopup(wx.ComboPopup):
     def Create(self, parent):
         self.list_ctrl = wx.ListCtrl(parent, style=wx.LC_LIST | wx.LC_SINGLE_SEL | wx.SIMPLE_BORDER)
         self.list_ctrl.Bind(wx.EVT_MOTION, self.OnMotion)
-        self.list_ctrl.SetFont(wx.Font(25, wx.MODERN, wx.NORMAL, wx.NORMAL,
-                                       False, u'Consolas'))
+        self.list_ctrl.SetFont(self.parent.GetFont())
         return True
 
     # Return the widget that is to be used for the popup
@@ -68,8 +67,6 @@ class EmojiSearchComboPopup(wx.ComboPopup):
     def OnComboKeyEvent(self, event):
         wx.ComboPopup.OnComboKeyEvent(self, event)
 
-    # Implement if you need to support special action when user
-    # double-clicks on the parent wxComboCtrl.
     def OnComboDoubleClick(self):
         wx.ComboPopup.OnComboDoubleClick(self)
 

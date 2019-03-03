@@ -20,8 +20,8 @@ class EmojiSearchTab(wx.Panel):
         self.down_sizer = wx.GridSizer(1, 2, 0, 0)
 
         self.user_input = wx.ComboCtrl(self)
-        self.user_input.SetPopupControl(EmojiSearchComboPopup())
-        self.user_input.GetPopupControl().list_ctrl.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnDescClick)
+        self.user_input.SetPopupControl(EmojiComboPopup(self))
+        self.user_input.GetPopupControl().GetControl().Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnDescClick)
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
 
         self.up_sizer.AddSpacer(50)

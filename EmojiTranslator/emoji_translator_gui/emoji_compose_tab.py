@@ -5,6 +5,7 @@ import threading
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_search_tab import get_matched_list
+from emoji_translator_gui.emoji_gui_utils import *
 
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
@@ -20,17 +21,20 @@ class EmojiComposeTab(wx.Panel):
         if self.user_profile["username"] == "guest":
             self.compose_tab_sizer = wx.FlexGridSizer(5, 1, 0, 0)
         else:
-            self.compose_tab_sizer = wx.FlexGridSizer(6, 1, 0, 0)
+            self.compose_tab_sizer = wx.FlexGridSizer(7, 1, 0, 0)
 
         self.compose_tab_sizer.AddGrowableRow(0, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(1, proportion=1)
-        self.compose_tab_sizer.AddGrowableRow(2, proportion=15)
         if self.user_profile["username"] == "guest":
+            self.compose_tab_sizer.AddGrowableRow(2, proportion=15)
             self.compose_tab_sizer.AddGrowableRow(3, proportion=1)
             self.compose_tab_sizer.AddGrowableRow(4, proportion=15)
         else:
+            self.compose_tab_sizer.AddGrowableRow(2, proportion=1)
+            self.compose_tab_sizer.AddGrowableRow(3, proportion=15)
             self.compose_tab_sizer.AddGrowableRow(4, proportion=1)
-            self.compose_tab_sizer.AddGrowableRow(5, proportion=15)
+            self.compose_tab_sizer.AddGrowableRow(5, proportion=1)
+            self.compose_tab_sizer.AddGrowableRow(6, proportion=15)
         self.compose_tab_sizer.AddGrowableCol(0)
 
         self.top_buttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -88,8 +92,17 @@ class EmojiComposeTab(wx.Panel):
         self.auto_comp_opt3.SetCursor(wx.Cursor(wx.CURSOR_HAND))
         self.auto_complete_options.Add(self.auto_comp_opt3, 1, wx.ALIGN_CENTER)
 
+        self.saved_texts_options = wx.ComboCtrl(self)
+        self.saved_texts_options.SetPopupControl(EmojiComboPopup(self))
+        self.saved_texts_options.GetPopupControl().GetControl().Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnSavedTextClick)
+        self.saved_texts_options.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.OnSavedTextSelection)
+
         self.compose_tab_sizer.Add(self.top_buttons_sizer, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.stt_result, 1, wx.EXPAND)
+        if self.user_profile["username"] != "guest":
+            self.compose_tab_sizer.Add(self.saved_texts_options, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+        else:
+            self.saved_texts_options.Hide()
         self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
 
         if self.user_profile["username"] != "guest":
@@ -105,6 +118,8 @@ class EmojiComposeTab(wx.Panel):
         self.SetSizer(self.compose_tab_sizer)
 
         self.tts_engine = pyttsx3.init()
+
+        self.Layout()
 
     def OnComposerClickEmoji(self, event):
         unicode = EMOJI_UNICODE[self.clicked_composer_emoji.replace(' ', '_')]
@@ -135,7 +150,15 @@ class EmojiComposeTab(wx.Panel):
                 self.auto_comp_opt3.Show()
 
         current_insertion_point = self.editor.GetInsertionPoint()
-        self.editor.ChangeValue(emojize(self.editor.GetValue(), use_aliases=True))
+        new_text = emojize(self.editor.GetValue(), use_aliases=True)
+        if new_text != self.editor.GetValue():
+            self.auto_comp_opt1.SetLabel("")
+            self.auto_comp_opt1.Hide()
+            self.auto_comp_opt2.SetLabel("")
+            self.auto_comp_opt2.Hide()
+            self.auto_comp_opt3.SetLabel("")
+            self.auto_comp_opt3.Hide()
+        self.editor.ChangeValue(new_text)
         self.editor.SetInsertionPoint(current_insertion_point)
         self.Layout()
 
@@ -150,13 +173,19 @@ class EmojiComposeTab(wx.Panel):
 
     def OnSave(self, event):
         self.save_response.SetLabel("")
+        init_size = len(self.user_profile["saved_messages"])
         try:
             text = self.editor.GetValue()
             if text != "":
                 self.user_profile["saved_messages"].add(text)
-                self.save_response.SetLabel("Text has been saved!")
+                if init_size != len(self.user_profile["saved_messages"]):
+                    self.save_response.SetLabel("Message has been saved!")
+                else:
+                    self.save_response.SetLabel("Message already exists!")
+            else:
+                self.save_response.SetLabel("Please input a message.")
         except:
-            self.save_response.SetLabel("Text could not be saved...")
+            self.save_response.SetLabel("Message could not be saved...")
 
     def OnPressAutoCorrect(self, event):
         text = self.editor.GetValue()
@@ -167,6 +196,18 @@ class EmojiComposeTab(wx.Panel):
         self.auto_comp_opt1.Hide()
         self.auto_comp_opt2.Hide()
         self.auto_comp_opt3.Hide()
+        self.Layout()
+
+    def OnSavedTextSelection(self, event):
+        input_val = self.saved_texts_options.GetValue()
+        matches = [msg for msg in list(self.user_profile["saved_messages"]) if msg.startswith(input_val)]
+        self.saved_texts_options.GetPopupControl().RemoveItems()
+        self.saved_texts_options.GetPopupControl().AddItems(matches)
+        self.Layout()
+
+    def OnSavedTextClick(self, event):
+        self.editor.AppendText(event.GetText())
+        self.saved_texts_options.Dismiss()
         self.Layout()
 
 class ListeningThread(threading.Thread):
