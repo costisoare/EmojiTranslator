@@ -1,7 +1,6 @@
 import unittest
-import os
 from emoji_translator.main_app import *
-from login.settings import Settings
+from user_settings.settings import Settings
 
 class TestUserProfile(unittest.TestCase):
     def setUp(self):
@@ -11,7 +10,7 @@ class TestUserProfile(unittest.TestCase):
                                          self.username + ".pickle")
         self.test_profile = dict({
                 "username" : self.username,
-                "settings" : Settings(self.username),
+                "user_settings" : Settings(self.username),
                 "saved_messages" : set()
         })
 
@@ -29,7 +28,7 @@ class TestUserProfile(unittest.TestCase):
         self.test_profile["username"] = "modified"
         self.username = self.test_profile["username"]
         self.test_profile["saved_messages"].add("this is a new message")
-        self.test_profile["settings"].settings_dict[SettingsEnum.COMPOSER_TAB_FONT_SIZE] = 25
+        self.test_profile["user_settings"].settings_dict[SettingsEnum.COMPOSER_TAB_FONT_SIZE] = 25
         save_user_profile(self.username, self.test_profile,
                           profile_dir=self.profile_dir)
         self.assertTrue(os.path.isfile(self.profile_path))

@@ -1,6 +1,3 @@
-import wx
-import os
-import sys
 import pickle
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
@@ -8,7 +5,7 @@ from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.enums import *
-from login.settings import Settings
+from user_settings.settings import Settings
 
 class MainWindow(wx.Frame):
     def __init__(self, username="guest"):
@@ -16,8 +13,7 @@ class MainWindow(wx.Frame):
 
         self.username = username
         self.user_profile = get_user_profile(self.username)
-        self.user_settings = self.user_profile["settings"]
-        self.user_profile["settings"] = self.user_settings
+        self.user_settings = self.user_profile["user_settings"]
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
@@ -129,7 +125,7 @@ def get_user_profile(username, profile_dir="../user_profiles"):
     else:
         return dict({
             "username" : username,
-            "settings" : Settings(username),
+            "user_settings" : Settings(username),
             "saved_messages" : set()
         })
 

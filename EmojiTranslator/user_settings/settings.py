@@ -1,4 +1,4 @@
-from login.default_settings import SETTINGS
+from user_settings.default_settings import SETTINGS
 from emoji_translator_gui.enums import SettingsEnum
 import wx
 

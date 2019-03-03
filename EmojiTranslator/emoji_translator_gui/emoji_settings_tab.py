@@ -1,5 +1,5 @@
 import wx
-from login.default_settings import *
+from user_settings.default_settings import *
 from emoji_translator_gui.enums import SettingsEnum
 
 class EmojiSettingsTab(wx.Panel):
