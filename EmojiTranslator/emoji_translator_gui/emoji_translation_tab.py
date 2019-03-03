@@ -40,7 +40,7 @@ class EmojiTranslationTab(wx.Panel):
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
         self.user_input.SetValue(saved_text)
 
-        swap_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'swap.png')
+        swap_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'gui_utils_files', 'swap.png')
         swap_bmp = wx.Bitmap(swap_bmp_file).ConvertToImage()
         swap_bmp = swap_bmp.Scale(32, 32, wx.IMAGE_QUALITY_HIGH)
         swap_bmp = swap_bmp.Rotate90()
