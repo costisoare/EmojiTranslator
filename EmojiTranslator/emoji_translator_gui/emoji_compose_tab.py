@@ -93,6 +93,7 @@ class EmojiComposeTab(wx.Panel):
         self.auto_complete_options.Add(self.auto_comp_opt3, 1, wx.ALIGN_CENTER)
 
         self.saved_texts_options = wx.ComboCtrl(self)
+        self.saved_texts_options.SetHint("Search Message")
         self.saved_texts_options.SetPopupControl(EmojiComboPopup(self))
         self.saved_texts_options.GetPopupControl().GetControl().Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnSavedTextClick)
         self.saved_texts_options.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.OnSavedTextSelection)

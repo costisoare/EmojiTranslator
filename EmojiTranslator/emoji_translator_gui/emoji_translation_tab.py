@@ -3,7 +3,6 @@ import emoji
 import pyttsx3
 import os
 from emoji_translator_utils.emoji_dict_utils import *
-from wx.lib.expando import ExpandoTextCtrl
 from emoji_translator_gui.enums import *
 
 class EmojiTranslationTab(wx.Panel):
@@ -32,11 +31,10 @@ class EmojiTranslationTab(wx.Panel):
 
         self.translation_direction = translation_direction
 
-        self.out_text = ExpandoTextCtrl(self,
-                                        style=wx.TE_READONLY | wx.NO_BORDER)
+        self.out_text = wx.TextCtrl(self, style=wx.TE_READONLY | wx.NO_BORDER | wx.TE_MULTILINE)
         self.out_text.SetBackgroundColour(self.GetBackgroundColour())
 
-        self.user_input = ExpandoTextCtrl(self)
+        self.user_input = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.user_input.Bind(wx.EVT_TEXT, self.OnInputChanged)
         self.user_input.SetValue(saved_text)
 
