@@ -11,7 +11,8 @@ class TestUserProfile(unittest.TestCase):
         self.test_profile = dict({
                 "username" : self.username,
                 "user_settings" : Settings(self.username),
-                "saved_messages" : set()
+                "saved_messages" : set(),
+                "used_emojis": Counter()
         })
 
     def test_save_empty_user_profile(self):

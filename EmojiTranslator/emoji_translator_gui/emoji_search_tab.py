@@ -7,7 +7,7 @@ class EmojiSearchTab(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         self.parent = parent
-
+        self.user_profile = self.parent.user_profile
         self.user_settings = self.parent.user_settings
 
         self.SetFont(wx.Font(self.user_settings.get_search_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
@@ -47,6 +47,12 @@ class EmojiSearchTab(wx.Panel):
         self.user_input.GetPopupControl().AddItems(matches)
 
     def OnDescClick(self, event):
+        if self.user_profile["username"] != "guest":
+            try:
+                self.user_profile["used_emojis"].update([EMOJI_UNICODE[event.GetText()]])
+            except KeyError:
+                self.user_profile["used_emojis"].update([EMOJI_ALIAS_UNICODE[event.GetText()]])
+
         desc = event.GetText().replace(" ", "_")
 
         if hasattr(self, "emoji_symbol"):
