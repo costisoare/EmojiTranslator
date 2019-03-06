@@ -12,7 +12,7 @@ class TestUserProfile(unittest.TestCase):
                 "username" : self.username,
                 "user_settings" : Settings(self.username),
                 "saved_messages" : set(),
-                "used_emojis": Counter()
+                "used_emojis": OrderedCounter()
         })
 
     def test_save_empty_user_profile(self):

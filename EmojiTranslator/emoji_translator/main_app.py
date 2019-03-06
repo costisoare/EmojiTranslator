@@ -6,7 +6,10 @@ from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.enums import *
 from user_settings.settings import Settings
-from collections import Counter
+from collections import *
+
+class OrderedCounter(Counter, OrderedDict):
+    pass
 
 class MainWindow(wx.Frame):
     def __init__(self, username="guest"):
@@ -128,7 +131,7 @@ def get_user_profile(username, profile_dir="../user_profiles"):
             "username" : username,
             "user_settings" : Settings(username),
             "saved_messages" : set(),
-            "used_emojis" : Counter()
+            "used_emojis" : OrderedCounter()
         })
 
 if __name__ == "__main__":

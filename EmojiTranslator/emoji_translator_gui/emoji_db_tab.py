@@ -76,6 +76,8 @@ class EmojiDBTab(wx.Panel):
 
     def populate_grid_with_emojis(self, category):
         self.emoji_bmps_panel.Destroy()
+        if self.user_profile["username"] != "guest":
+            self.emoji_categories["most_used"] = list(self.user_profile["used_emojis"].keys())
         self.emoji_bmps_panel = EmojiPanel(self, category, self.emoji_categories[category], composer=self.composer)
         self.dbtab_sizer.Add(self.emoji_bmps_panel, 1, wx.EXPAND|wx.ALIGN_LEFT)
 
@@ -88,10 +90,10 @@ class EmojiPanel(ScrolledPanel):
         self.Show(False)
         self.emoji_size = self.parent.user_settings.get_composer_emoji_size() if self.parent.composer else self.parent.user_settings.get_db_emoji_size()
         if category != "most_used":
-            self.sizer = wx.GridSizer(len(category_list) / 8 + 1, 8, 15, 0)
+            self.sizer = wx.GridSizer(len(category_list) / len(self.parent.emoji_categ_buttons.keys()) + 1, len(self.parent.emoji_categ_buttons.keys()), 15, 0)
             self.add_emojis_to_panel(category_list)
         else:
-            self.sizer = wx.GridSizer(len(category_list) / 9 + 1, 9, 15, 0)
+            self.sizer = wx.GridSizer(len(category_list) / len(self.parent.emoji_categ_buttons.keys()) + 1, len(self.parent.emoji_categ_buttons.keys()), 15, 0)
             self.add_most_used_emojis(category_list)
         self.sizer.SetRows(self.realnum_emojis / 8 + 1)
         self.SetSizer(self.sizer)
