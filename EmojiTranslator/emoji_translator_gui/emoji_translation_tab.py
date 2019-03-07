@@ -3,7 +3,7 @@ import emoji
 import pyttsx3
 import os
 from emoji_translator_utils.emoji_dict_utils import *
-from emoji_translator_gui.enums import *
+from emoji_translator_utils.enums import *
 
 class EmojiTranslationTab(wx.Panel):
     def __init__(self, parent, saved_text="", translation_direction=TranslationDirection.FROM_EMOJI_TO_TEXT):

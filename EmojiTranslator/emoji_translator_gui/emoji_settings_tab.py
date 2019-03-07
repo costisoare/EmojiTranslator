@@ -1,6 +1,6 @@
 import wx
 from user_settings.default_settings import *
-from emoji_translator_gui.enums import SettingsEnum
+from emoji_translator_utils.enums import SettingsEnum
 
 class EmojiSettingsTab(wx.Panel):
     def __init__(self, parent):

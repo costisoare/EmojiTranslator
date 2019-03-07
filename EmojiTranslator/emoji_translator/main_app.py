@@ -4,7 +4,7 @@ from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
-from emoji_translator_gui.enums import *
+from emoji_translator_utils.enums import *
 from user_settings.user_profile import *
 
 class MainWindow(wx.Frame):

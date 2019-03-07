@@ -1,4 +1,4 @@
-from emoji_translator_gui.enums import SettingsEnum
+from emoji_translator_utils.enums import SettingsEnum
 
 SETTINGS = dict({
     SettingsEnum.SEARCH_TAB_FONT_SIZE : 15,
