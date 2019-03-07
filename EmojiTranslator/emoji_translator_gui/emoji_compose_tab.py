@@ -18,14 +18,14 @@ class EmojiComposeTab(wx.Panel):
         self.user_profile = self.parent.user_profile
 
         self.SetBackgroundColour(self.user_settings.get_background_color())
-        if self.user_profile["username"] == "guest":
+        if self.user_profile.username == "guest":
             self.compose_tab_sizer = wx.FlexGridSizer(5, 1, 0, 0)
         else:
             self.compose_tab_sizer = wx.FlexGridSizer(7, 1, 0, 0)
 
         self.compose_tab_sizer.AddGrowableRow(0, proportion=1)
         self.compose_tab_sizer.AddGrowableRow(1, proportion=1)
-        if self.user_profile["username"] == "guest":
+        if self.user_profile.username == "guest":
             self.compose_tab_sizer.AddGrowableRow(2, proportion=15)
             self.compose_tab_sizer.AddGrowableRow(3, proportion=1)
             self.compose_tab_sizer.AddGrowableRow(4, proportion=15)
@@ -100,13 +100,13 @@ class EmojiComposeTab(wx.Panel):
 
         self.compose_tab_sizer.Add(self.top_buttons_sizer, 1, wx.EXPAND)
         self.compose_tab_sizer.Add(self.stt_result, 1, wx.EXPAND)
-        if self.user_profile["username"] != "guest":
+        if self.user_profile.username != "guest":
             self.compose_tab_sizer.Add(self.saved_texts_options, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
         else:
             self.saved_texts_options.Hide()
         self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
 
-        if self.user_profile["username"] != "guest":
+        if self.user_profile.username != "guest":
             self.compose_tab_sizer.Add(self.save_sizer, 1, wx.ALIGN_CENTER)
         else:
             self.save_button.Hide()
@@ -124,7 +124,7 @@ class EmojiComposeTab(wx.Panel):
 
     def OnComposerClickEmoji(self, event):
         unicode = EMOJI_UNICODE[self.clicked_composer_emoji.replace(' ', '_')]
-        self.user_profile["used_emojis"].update([unicode])
+        self.user_profile.used_emojis.update([unicode])
         self.editor.AppendText(unicode)
 
     def OnInputChanged(self, event):
@@ -175,12 +175,12 @@ class EmojiComposeTab(wx.Panel):
 
     def OnSave(self, event):
         self.save_response.SetLabel("")
-        init_size = len(self.user_profile["saved_messages"])
+        init_size = len(self.user_profile.saved_messages)
         try:
             text = self.editor.GetValue()
             if text != "":
-                self.user_profile["saved_messages"].add(text)
-                if init_size != len(self.user_profile["saved_messages"]):
+                self.user_profile.saved_messages.add(text)
+                if init_size != len(self.user_profile.saved_messages):
                     self.update_used_emojis_from_message(text)
                     self.save_response.SetLabel("Message has been saved!")
                 else:
@@ -203,7 +203,7 @@ class EmojiComposeTab(wx.Panel):
 
     def OnSavedTextSelection(self, event):
         input_val = self.saved_texts_options.GetValue()
-        matches = [msg for msg in list(self.user_profile["saved_messages"]) if msg.startswith(input_val)]
+        matches = [msg for msg in list(self.user_profile.saved_messages) if msg.startswith(input_val)]
         self.saved_texts_options.GetPopupControl().RemoveItems()
         self.saved_texts_options.GetPopupControl().AddItems(matches)
         self.Layout()
@@ -226,7 +226,7 @@ class EmojiComposeTab(wx.Panel):
                     emojis_in_message.append(EMOJI_UNICODE[parsed])
                 except KeyError:
                     emojis_in_message.append(EMOJI_ALIAS_UNICODE[parsed])
-        self.user_profile["used_emojis"].update(emojis_in_message)
+        self.user_profile.used_emojis.update(emojis_in_message)
 
 
 class ListeningThread(threading.Thread):
@@ -246,7 +246,7 @@ class ListeningThread(threading.Thread):
                 self.parent.stt_result.SetLabel("Found: " + matched[0])
                 try:
                     emoji = EMOJI_UNICODE[matched[0]]
-                    self.parent.user_profile["used_emojis"].update([emoji])
+                    self.parent.user_profile.used_emojis.update([emoji])
                     self.parent.editor.AppendText(emoji)
                 except KeyError:
                     self.parent.editor.AppendText(EMOJI_ALIAS_UNICODE[matched[0]])

@@ -15,8 +15,8 @@ class EmojiDBTab(wx.Panel):
 
         self.SetBackgroundColour(self.user_settings.get_background_color())
         self.emoji_categories = emoji_categs_from_file()
-        if self.user_profile["username"] != "guest":
-            self.emoji_categories["most_used"] = list(self.user_profile["used_emojis"].keys())
+        if self.user_profile.username != "guest":
+            self.emoji_categories["most_used"] = list(self.user_profile.used_emojis.keys())
         self.emoji_categ_buttons = dict()
 
         self.dbtab_sizer = wx.FlexGridSizer(3, 1, 0, 0)
@@ -30,7 +30,7 @@ class EmojiDBTab(wx.Panel):
 
         self.dbtab_sizer.Add(self.button_sizer, 1, wx.EXPAND)
         self.dbtab_sizer.AddSpacer(10)
-        if self.user_profile["username"] != "guest":
+        if self.user_profile.username != "guest":
             mostused_bmp_file = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                                          'gui_utils_files', 'most_used.png')
             most_used_bmp = wx.Bitmap(mostused_bmp_file).ConvertToImage()
@@ -76,8 +76,8 @@ class EmojiDBTab(wx.Panel):
 
     def populate_grid_with_emojis(self, category):
         self.emoji_bmps_panel.Destroy()
-        if self.user_profile["username"] != "guest":
-            self.emoji_categories["most_used"] = list(self.user_profile["used_emojis"].keys())
+        if self.user_profile.username != "guest":
+            self.emoji_categories["most_used"] = list(self.user_profile.used_emojis.keys())
         self.emoji_bmps_panel = EmojiPanel(self, category, self.emoji_categories[category], composer=self.composer)
         self.dbtab_sizer.Add(self.emoji_bmps_panel, 1, wx.EXPAND|wx.ALIGN_LEFT)
 

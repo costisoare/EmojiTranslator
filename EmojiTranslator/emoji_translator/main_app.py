@@ -6,10 +6,7 @@ from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.enums import *
 from user_settings.settings import Settings
-from collections import *
-
-class OrderedCounter(Counter, OrderedDict):
-    pass
+from user_settings.user_profile import UserProfile
 
 class MainWindow(wx.Frame):
     def __init__(self, username="guest"):
@@ -17,7 +14,7 @@ class MainWindow(wx.Frame):
 
         self.username = username
         self.user_profile = get_user_profile(self.username)
-        self.user_settings = self.user_profile["user_settings"]
+        self.user_settings = self.user_profile.user_settings
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
@@ -127,12 +124,7 @@ def get_user_profile(username, profile_dir="../user_profiles"):
         with open(profile_path, 'rb') as f:
             return pickle.load(f)
     else:
-        return dict({
-            "username" : username,
-            "user_settings" : Settings(username),
-            "saved_messages" : set(),
-            "used_emojis" : OrderedCounter()
-        })
+        return UserProfile(username)
 
 if __name__ == "__main__":
     app = wx.App(False)

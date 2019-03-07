@@ -47,11 +47,11 @@ class EmojiSearchTab(wx.Panel):
         self.user_input.GetPopupControl().AddItems(matches)
 
     def OnDescClick(self, event):
-        if self.user_profile["username"] != "guest":
+        if self.user_profile.username != "guest":
             try:
-                self.user_profile["used_emojis"].update([EMOJI_UNICODE[event.GetText()]])
+                self.user_profile.used_emojis.update([EMOJI_UNICODE[event.GetText()]])
             except KeyError:
-                self.user_profile["used_emojis"].update([EMOJI_ALIAS_UNICODE[event.GetText()]])
+                self.user_profile.used_emojis.update([EMOJI_ALIAS_UNICODE[event.GetText()]])
 
         desc = event.GetText().replace(" ", "_")
 
