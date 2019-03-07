@@ -5,8 +5,7 @@ from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.enums import *
-from user_settings.settings import Settings
-from user_settings.user_profile import UserProfile
+from user_settings.user_profile import *
 
 class MainWindow(wx.Frame):
     def __init__(self, username="guest"):
@@ -122,7 +121,11 @@ def get_user_profile(username, profile_dir="../user_profiles"):
     profile_path = os.path.join(os.getcwd(), profile_dir, username + ".pickle")
     if os.path.isfile(profile_path):
         with open(profile_path, 'rb') as f:
-            return pickle.load(f)
+            profile = pickle.load(f)
+        if profile.version < LATEST_VERSION:
+            return create_profile_from_existing(profile)
+        else:
+            return profile
     else:
         return UserProfile(username)
 
