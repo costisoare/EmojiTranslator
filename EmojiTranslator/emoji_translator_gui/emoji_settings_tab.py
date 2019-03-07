@@ -130,8 +130,9 @@ class EmojiSettingsTab(wx.Panel):
                     applied_settings += 1
             else:
                 color = self.settings_value_gui_dict[setting].GetColour()
-                self.user_settings.settings_dict[setting] = color.Get()
-                applied_settings += 1
+                if color != self.user_settings.get_background_color():
+                    self.user_settings.settings_dict[setting] = color.Get()
+                    applied_settings += 1
         self.apply_result.SetLabel(str(applied_settings) + " setting(s) applied!")
 
 
