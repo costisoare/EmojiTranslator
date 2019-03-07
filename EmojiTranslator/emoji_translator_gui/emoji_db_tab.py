@@ -77,7 +77,9 @@ class EmojiDBTab(wx.Panel):
     def populate_grid_with_emojis(self, category):
         self.emoji_bmps_panel.Destroy()
         if self.user_profile.username != "guest":
-            self.emoji_categories["most_used"] = list(self.user_profile.used_emojis.keys())
+            sorted_most_used = [x[0] for x in sorted(self.user_profile.used_emojis.items(), key=lambda kv: kv[1], reverse=True)]
+            print(sorted_most_used)
+            self.emoji_categories["most_used"] = sorted_most_used
         self.emoji_bmps_panel = EmojiPanel(self, category, self.emoji_categories[category], composer=self.composer)
         self.dbtab_sizer.Add(self.emoji_bmps_panel, 1, wx.EXPAND|wx.ALIGN_LEFT)
 
@@ -127,5 +129,5 @@ class EmojiPanel(ScrolledPanel):
                 wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
                 UNICODE_EMOJI[emoji],
                 composer=self.composer, parent=self)
-            self.sizer.Add(emoji.bitmap, 1, wx.ALIGN_CENTER)
+            self.sizer.Add(emoji.bitmap, 1, wx.ALIGN_LEFT)
             self.realnum_emojis += 1
