@@ -1,4 +1,5 @@
 import wx
+from urllib.request import urlopen
 import pyttsx3
 import speech_recognition as sr
 import threading
@@ -275,10 +276,17 @@ class ListeningThread(threading.Thread):
             audio = r.listen(source, phrase_time_limit=5)
 
         self.parent.stt_result.SetLabel("Translating into emoji...")
-        recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
-        #recognized_str = r.recognize_sphinx(audio)
+        if internet_on():
+            recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
+        else:
+            recognized_str = r.recognize_sphinx(audio)
 
         string_to_search = recognized_str.replace(".", "").lower()
         return get_matched_list(string_to_search)
 
-
+def internet_on():
+    try:
+        urlopen('http://216.58.192.142', timeout=1)
+        return True
+    except:
+        return False
