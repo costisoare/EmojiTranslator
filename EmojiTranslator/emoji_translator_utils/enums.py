@@ -6,6 +6,7 @@ class Tab(enum.Enum):
     TRANSLATE = "Translate"
     COMPOSE = "Compose"
     SETTINGS = "Settings"
+    HELP = "Help"
 
 class TranslationDirection(enum.Enum):
     FROM_TEXT_TO_EMOJI = 0

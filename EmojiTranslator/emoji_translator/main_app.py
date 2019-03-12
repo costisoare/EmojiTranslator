@@ -4,6 +4,7 @@ from emoji_translator_gui.emoji_search_tab import EmojiSearchTab
 from emoji_translator_gui.emoji_translation_tab import *
 from emoji_translator_gui.emoji_compose_tab import EmojiComposeTab
 from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
+from emoji_translator_gui.emoji_help_tab import *
 from emoji_translator_utils.enums import *
 from user_settings.user_profile import *
 
@@ -31,9 +32,10 @@ class MainWindow(wx.Frame):
         self.translate_button = wx.ToggleButton(self.buttons_panel, label=Tab.TRANSLATE.value)
         self.composer_button = wx.ToggleButton(self.buttons_panel, label=Tab.COMPOSE.value)
         self.settings_button = wx.ToggleButton(self.buttons_panel, label=Tab.SETTINGS.value)
+        self.help_button = wx.ToggleButton(self.buttons_panel, label=Tab.HELP.value)
         self.settings_button.SetFont(self.settings_button.GetFont().MakeBold())
 
-        self.options_button_list = list([self.search_button, self.db_button,
+        self.options_button_list = list([self.search_button, self.db_button, self.help_button,
                                          self.translate_button, self.composer_button, self.settings_button])
 
         for button in self.options_button_list:
@@ -50,6 +52,8 @@ class MainWindow(wx.Frame):
         self.buttons_sizer.Add(self.composer_button, 0, wx.ALL, 5)
         self.buttons_sizer.AddSpacer(50)
         self.buttons_sizer.Add(self.settings_button, 0, wx.ALL, 5)
+        self.buttons_sizer.AddSpacer(35)
+        self.buttons_sizer.Add(self.help_button, 0, wx.ALL, 5)
         self.buttons_sizer.AddSpacer(15)
 
         self.buttons_panel.SetSizer(self.buttons_sizer)
@@ -78,8 +82,10 @@ class MainWindow(wx.Frame):
             return EmojiDBTab(self)
         elif name == Tab.COMPOSE.value:
             return EmojiComposeTab(self, saved_text=self.current_saved_composer_text)
-        else:
+        elif name == Tab.SETTINGS.value:
             return EmojiSettingsTab(self)
+        else:
+            return EmojiHelpTab(self)
 
     def OnNewPress(self, event):
         if type(self.main_panel) is EmojiComposeTab:
