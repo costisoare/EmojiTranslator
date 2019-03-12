@@ -13,8 +13,11 @@ class EmojiComposeTab(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.parent = parent
         self.user_settings = self.parent.user_settings
-
-        self.SetFont(wx.Font(self.user_settings.get_composer_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        if self.user_settings.get_is_general_font_size_enabled():
+            font_size = self.user_settings.get_general_font_size()
+        else:
+            font_size = self.user_settings.get_composer_tab_font_size()
+        self.SetFont(wx.Font(font_size, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
         self.user_profile = self.parent.user_profile
 

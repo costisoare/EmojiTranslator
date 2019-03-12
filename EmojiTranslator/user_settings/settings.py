@@ -37,6 +37,12 @@ class Settings(object):
     def get_background_color(self):
         return wx.Colour(*self.settings_dict.get(SettingsEnum.BACKGROUND_COLOR))
 
+    def get_general_font_size(self):
+        return self.settings_dict.get(SettingsEnum.GENERAL_FONT_SIZE)
+
+    def get_is_general_font_size_enabled(self):
+        return self.settings_dict.get(SettingsEnum.GENERAL_FONT_SIZE_ENABLED)
+
     def get_tts_speed(self):
         speed_str = self.settings_dict.get(SettingsEnum.TTS_SPEED)
         if speed_str == "slow":

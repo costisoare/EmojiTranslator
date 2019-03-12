@@ -1,15 +1,18 @@
 import wx
+from wx.lib.scrolledpanel import ScrolledPanel
 from user_settings.default_settings import *
 from emoji_translator_utils.enums import SettingsEnum
 
-class EmojiSettingsTab(wx.Panel):
+class EmojiSettingsTab(ScrolledPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        ScrolledPanel.__init__(self, parent)
+        self.SetupScrolling(True)
         self.parent = parent
         self.user_settings = self.parent.user_settings
 
         self.SetBackgroundColour(self.user_settings.get_background_color())
-        self.SetFont(wx.Font(15, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        self.SetFont(wx.Font(self.user_settings.get_general_font_size() if self.user_settings.get_is_general_font_size_enabled() else 15,
+                             wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
 
         self.sizer = wx.FlexGridSizer(12, 1, 10, 10)
         self.settings_value_gui_dict = dict()
@@ -30,8 +33,14 @@ class EmojiSettingsTab(wx.Panel):
                                   wx.ALIGN_LEFT)
             if setting == SettingsEnum.TTS_SPEED:
                 value_gui = wx.ComboBox(self, choices=list(["slow", "normal", "fast"]))
-            else:
+            elif setting == SettingsEnum.BACKGROUND_COLOR:
                 value_gui = wx.ColourPickerCtrl(self, colour=self.user_settings.get_background_color())
+            elif setting == SettingsEnum.GENERAL_FONT_SIZE:
+                value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
+            else:
+                value_gui = wx.CheckBox(self)
+                value_gui.SetValue(self.user_settings.get_is_general_font_size_enabled())
+
             self.settings_value_gui_dict[setting] = value_gui
             self.gen_set_sizer.Add(value_gui, 0, wx.ALL, 5)
 
@@ -128,11 +137,17 @@ class EmojiSettingsTab(wx.Panel):
                     else:
                         self.user_settings.settings_dict[setting] = current_selection
                     applied_settings += 1
-            else:
+            elif type(self.settings_value_gui_dict[setting]) is wx.ColourPickerCtrl:
                 color = self.settings_value_gui_dict[setting].GetColour()
                 if color != self.user_settings.get_background_color():
                     self.user_settings.settings_dict[setting] = color.Get()
                     applied_settings += 1
+            elif type(self.settings_value_gui_dict[setting]) is wx.CheckBox:
+                val = self.settings_value_gui_dict[setting].GetValue()
+                if val != self.user_settings.settings_dict[setting]:
+                    self.user_settings.settings_dict[setting] = val
+                    applied_settings += 1
+
         self.apply_result.SetLabel(str(applied_settings) + " setting(s) applied!")
 
 

@@ -19,3 +19,5 @@ class SettingsEnum(enum.Enum):
     COMPOSER_TAB_FONT_SIZE = "composer_tab_font_size"
     TTS_SPEED = "tts_speed"
     BACKGROUND_COLOR = "background_color"
+    GENERAL_FONT_SIZE = "general_font_size"
+    GENERAL_FONT_SIZE_ENABLED = "general_font_size_enabled"

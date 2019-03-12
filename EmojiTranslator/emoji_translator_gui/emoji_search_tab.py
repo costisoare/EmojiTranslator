@@ -10,7 +10,11 @@ class EmojiSearchTab(wx.Panel):
         self.user_profile = self.parent.user_profile
         self.user_settings = self.parent.user_settings
 
-        self.SetFont(wx.Font(self.user_settings.get_search_tab_font_size(), wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
+        if self.user_settings.get_is_general_font_size_enabled():
+            font_size = self.user_settings.get_general_font_size()
+        else:
+            font_size = self.user_settings.get_search_tab_font_size()
+        self.SetFont(wx.Font(font_size, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas'))
         self.SetBackgroundColour(self.user_settings.get_background_color())
 
         self.main_sizer = wx.GridSizer(2, 1, 0, 0)
