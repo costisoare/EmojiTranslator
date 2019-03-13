@@ -16,6 +16,11 @@ HELP_STRINGS = dict({
     * Very similar to the classic message composer with emojis: it has a text box and an emoji selection space.
     * The translation "cheat" works here, as well.
     * There is also an auto-complete option that gets activated when you start typing an emoji description. E.g. when you type ":ca", there will be auto-complete options, such as cat or car.
+            """,
+    "Miscellaneous" : """
+    * Every emoji image (not inside the text fields) has 2 right click options: 
+        - Copy Emoji - this enables the user to copy the emoji in any message composer, such as Twitter, Facebook etc.
+        - Show Description - this opens a tooltip with the official text description and with the real size emoji.
             """
 })
 
