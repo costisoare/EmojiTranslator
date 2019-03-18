@@ -3990,6 +3990,16 @@ def tts_friendly_descriptions(text):
 
 def get_emojis_from_text(text):
     emojis_in_message = []
+
+    # remove all emoji descriptions between delimiters
+    # to avoid confusion when calling demojize()
+    emoji_descs_between_delimiters = regex.findall(
+        u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+%s)' % (":", ":"),
+        text
+    )
+    for desc in emoji_descs_between_delimiters:
+        text = text.replace(desc, "")
+
     all_emoji_desc = regex.findall(
         u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+%s)' % (":", ":"),
         demojize(text)
