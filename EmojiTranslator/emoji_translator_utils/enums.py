@@ -22,3 +22,10 @@ class SettingsEnum(enum.Enum):
     BACKGROUND_COLOR = "background_color"
     GENERAL_FONT_SIZE = "general_font_size"
     GENERAL_FONT_SIZE_ENABLED = "general_font_size_enabled"
+
+class Sentiment(enum.Enum):
+    VERY_POSITIVE = "very positive"
+    POSITIVE = "positive"
+    NEUTRAL = "neutral"
+    NEGATIVE = "negative"
+    VERY_NEGATIVE = "very negative"
