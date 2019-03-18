@@ -2,7 +2,6 @@ import gensim
 import gensim.corpora as corpora
 import pandas
 import re
-from gensim.test.utils import datapath
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
@@ -14,10 +13,8 @@ def sent_to_words(sentences):
 
 stop_words = stopwords.words('english')
 stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
-print("stopwords")
 
 df = pandas.read_json('https://raw.githubusercontent.com/selva86/datasets/master/newsgroups.json')
-print("download json")
 
 # Convert to list
 data = df.content.values.tolist()
@@ -29,21 +26,17 @@ data = [re.sub('\s+', ' ', sent) for sent in data]
 data = [re.sub("\'", "", sent) for sent in data]
 
 data_words = list(sent_to_words(data))
-print("convert data")
 
 lemmatizer = WordNetLemmatizer()
 data_lemmatized = [[lemmatizer.lemmatize(w) for w in sent] for sent in data_words]
-print("lemmatize")
 
 id2word = corpora.Dictionary(data_lemmatized)
 texts = data_lemmatized
 corpus = [id2word.doc2bow(text) for text in texts]
-print("create corpora")
 
 lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                            id2word=id2word,
-                                           num_topics=200)
-print("build model")
+                                           num_topics=20)
 
 other_texts = [
     ['computer', 'time', 'graph'],
