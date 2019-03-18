@@ -42,7 +42,7 @@ def retrieve_tweets(tweets):
             text_tweets.append(tweet.text)
         except tweepy.TweepError as e:
             print("====== WAIT ======")
-            time.sleep(60 * 20)
+            time.sleep(60 * 5)
             print("===== RESUME =====")
         except StopIteration:
             if len(text_tweets) < 100:
