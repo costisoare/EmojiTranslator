@@ -7,6 +7,7 @@ from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_search_tab import get_matched_list
 from emoji_translator_gui.emoji_gui_utils import *
+from emoji_mining.sentiment_analysis import *
 
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
@@ -54,8 +55,16 @@ class EmojiComposeTab(wx.Panel):
         self.top_buttons_sizer.Add(self.tts_button, 1, wx.ALIGN_CENTER)
         self.top_buttons_sizer.Add(self.stt_button, 1, wx.ALIGN_CENTER)
 
+        self.emojis_intext_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.editor_emojis_sizer = wx.FlexGridSizer(1, 2, 0, 0)
+        self.editor_emojis_sizer.AddGrowableCol(0)
+        self.editor_emojis_sizer.AddGrowableRow(0)
         self.editor = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.editor.SetValue(saved_text)
+        self.editor_emojis_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+        self.editor_emojis_sizer.Add(self.emojis_intext_sizer, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+
         self.emojis_tab = EmojiDBTab(self, composer=True)
 
         self.stt_result = wx.StaticText(self)
@@ -108,7 +117,7 @@ class EmojiComposeTab(wx.Panel):
             self.compose_tab_sizer.Add(self.saved_texts_options, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
         else:
             self.saved_texts_options.Hide()
-        self.compose_tab_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+        self.compose_tab_sizer.Add(self.editor_emojis_sizer, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
 
         if self.user_profile.username != "guest":
             self.compose_tab_sizer.Add(self.save_sizer, 1, wx.ALIGN_CENTER)
@@ -119,6 +128,10 @@ class EmojiComposeTab(wx.Panel):
         self.compose_tab_sizer.Add(self.emojis_tab, 1, wx.EXPAND)
 
         self.editor.Bind(wx.EVT_TEXT, self.OnInputChanged)
+
+        self.emojis_in_input = set()
+        self.emoji_images_ui = dict()
+        self.emoji_sentiment_ratings = None
 
         self.SetSizer(self.compose_tab_sizer)
 
@@ -133,6 +146,12 @@ class EmojiComposeTab(wx.Panel):
 
     def OnInputChanged(self, event):
         text = self.editor.GetValue()
+        self.emoji_sentiment_ratings = emoji_sentiments_from_text(text)
+        emojis = set(get_emojis_from_text(text))
+        if self.emojis_in_input != emojis:
+            self.emojis_in_input = emojis
+            self.update_current_emojis()
+
         emoji_descs = regex.findall(
             u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+)' % ":",
             text)
@@ -217,6 +236,27 @@ class EmojiComposeTab(wx.Panel):
         self.saved_texts_options.Dismiss()
         self.Layout()
 
+    def OnClickTextMining(self, event):
+        emoji = self.emoji_images_ui[event.GetEventObject()]
+        TextMiningPanel(self, emoji).Show()
+
+    def update_current_emojis(self):
+        for emoji in self.emoji_images_ui.keys():
+            emoji.Destroy()
+
+        self.emoji_images_ui = dict()
+
+        for emoji in self.emojis_in_input:
+            init_emoji = wx.Image(unicode_to_filename(emoji, 32))
+            emoji_bmp = EmojiBitmap(
+                wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
+                UNICODE_EMOJI[emoji],
+                composer=False, parent=self)
+            self.emojis_intext_sizer.Add(emoji_bmp.bitmap, 1, wx.ALIGN_CENTER)
+            self.emoji_images_ui[emoji_bmp.bitmap] = emoji
+            emoji_bmp.bitmap.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+            emoji_bmp.bitmap.Bind(wx.EVT_LEFT_UP, self.OnClickTextMining)
+
     def update_used_emojis_from_message(self, text):
         self.user_profile.used_emojis.update(get_emojis_from_text(text))
 
@@ -280,3 +320,35 @@ def internet_on():
         return True
     except:
         return False
+
+class TextMiningPanel(wx.Frame):
+    def __init__(self, parent, emoji=None):
+        wx.Frame.__init__(self, parent, title="Text Mining For " + UNICODE_EMOJI[emoji])
+        self.SetBackgroundColour(parent.GetBackgroundColour())
+        self.SetFont(parent.GetFont())
+
+        self.emoji_sentiment_ratings = parent.emoji_sentiment_ratings
+
+        u_font = self.GetFont()
+        u_font.SetUnderlined(True)
+
+        self.SetSize((400, 400))
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        init_emoji = wx.Image(unicode_to_filename(emoji, 64))
+        emoji_bmp = EmojiBitmap(
+            wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
+            UNICODE_EMOJI[emoji],
+            composer=False, parent=self)
+        self.sizer.Add(emoji_bmp.bitmap, 1, wx.ALIGN_CENTER)
+
+        sentiment_label = wx.StaticText(self, label="Sentiment Polarity in Message:")
+        sentiment_label.SetFont(u_font)
+        self.sizer.Add(sentiment_label, 1, wx.ALIGN_CENTER)
+
+        sentiment_value = wx.StaticText(self,
+                                        label=self.emoji_sentiment_ratings[emoji][0]
+                                              + ", "
+                                              + str(self.emoji_sentiment_ratings[emoji][1]))
+        self.sizer.Add(sentiment_value, 1, wx.ALIGN_CENTER)
+
+        self.SetSizer(self.sizer)

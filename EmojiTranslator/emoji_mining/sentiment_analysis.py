@@ -8,17 +8,17 @@ analyzer = SentimentIntensityAnalyzer()
 def sent_rating(compound_score, emoji_sent_score=0):
     if emoji_sent_score is None:
         emoji_sent_score = 0
-    score = (compound_score + emoji_sent_score) / 2
+    score = round((compound_score + emoji_sent_score) / 2, 3)
     if score < -0.5:
-        return Sentiment.VERY_NEGATIVE.value
+        return Sentiment.VERY_NEGATIVE.value, score
     elif score < -0.05:
-        return Sentiment.NEGATIVE.value
+        return Sentiment.NEGATIVE.value, score
     elif score < 0.05:
-        return Sentiment.NEUTRAL.value
+        return Sentiment.NEUTRAL.value, score
     elif score < 0.5:
-        return Sentiment.POSITIVE.value
+        return Sentiment.POSITIVE.value, score
     else:
-        return Sentiment.VERY_POSITIVE.value
+        return Sentiment.VERY_POSITIVE.value, score
 
 # get the csv data to compute emoji individual scores
 def emoji_sentiment_scores():
