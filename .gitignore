@@ -8,3 +8,4 @@
 EmojiTranslator/user_profiles/*
 EmojiTranslator/test/*/*.pickle
 **/__pycache__/*
+**/twitter_emoji_data/*
