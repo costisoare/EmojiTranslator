@@ -218,20 +218,7 @@ class EmojiComposeTab(wx.Panel):
         self.Layout()
 
     def update_used_emojis_from_message(self, text):
-        emojis_in_message = []
-        all_emoji_desc = regex.findall(
-            u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+%s)' % (":", ":"),
-            demojize(text)
-        )
-        for desc in all_emoji_desc:
-            parsed = desc[1:-1]
-            if parsed in set(EMOJI_DESC_LIST):
-                try:
-                    emojis_in_message.append(EMOJI_UNICODE[parsed])
-                except KeyError:
-                    emojis_in_message.append(EMOJI_ALIAS_UNICODE[parsed])
-        self.user_profile.used_emojis.update(emojis_in_message)
-
+        self.user_profile.used_emojis.update(get_emojis_from_text(text))
 
 class ListeningThread(threading.Thread):
     def __init__(self, parent):
