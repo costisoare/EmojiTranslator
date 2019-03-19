@@ -5,20 +5,31 @@ from emoji_translator_utils.emoji_dict_utils import *
 
 analyzer = SentimentIntensityAnalyzer()
 
+def polarity_string(score):
+    if score < -0.5:
+        return Sentiment.VERY_NEGATIVE.value, 1
+    elif score < -0.05:
+        return Sentiment.NEGATIVE.value, 2
+    elif score < 0.05:
+        return Sentiment.NEUTRAL.value, 3
+    elif score < 0.5:
+        return Sentiment.POSITIVE.value, 4
+    else:
+        return Sentiment.VERY_POSITIVE.value, 5
+
 def sent_rating(compound_score, emoji_sent_score=0):
     if emoji_sent_score is None:
         emoji_sent_score = 0
-    score = round((compound_score + emoji_sent_score) / 2, 3)
-    if score < -0.5:
-        return Sentiment.VERY_NEGATIVE.value, score
-    elif score < -0.05:
-        return Sentiment.NEGATIVE.value, score
-    elif score < 0.05:
-        return Sentiment.NEUTRAL.value, score
-    elif score < 0.5:
-        return Sentiment.POSITIVE.value, score
+    diff = abs(polarity_string(emoji_sent_score)[1] - polarity_string(compound_score)[1])
+    if diff >= 2:
+        if abs(compound_score) > abs(emoji_sent_score):
+            score = compound_score
+        else:
+            score = emoji_sent_score
     else:
-        return Sentiment.VERY_POSITIVE.value, score
+        score = round((compound_score + emoji_sent_score) / 2, 3)
+
+    return polarity_string(score)[0], score
 
 # get the csv data to compute emoji individual scores
 def emoji_sentiment_scores():
