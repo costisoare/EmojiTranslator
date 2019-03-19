@@ -295,10 +295,13 @@ class ListeningThread(threading.Thread):
 
         self.parent.stt_result.SetLabel("Translating into emoji...")
         if internet_on():
-            recognized_str = r.recognize_bing(audio, key="7bdc27c1138e48b59c255595b5102c4f")
+            try:
+                recognized_str = r.recognize_wit(audio, key="OYLGBIKSJRGAKVG4VB6VL27NGVQX2E6I")
+            except:
+                recognized_str = r.recognize_houndify(audio, client_id="Xsgj7uSrcZOKZzW_tCLYKA==",
+                                                      client_key="0MzqoD0kz9pe8WCo_3J2LPu9GGoJXbppuRBey657BSSPjX8cDT2k6GalfMpqqawkotbBNIrBURlsEircDNCd4Q==")
         else:
             recognized_str = r.recognize_sphinx(audio)
-
         string_to_search = recognized_str.replace(".", "").lower()
         return get_matched_list(string_to_search)
 
