@@ -1,4 +1,5 @@
 import wx
+from wx.lib.scrolledpanel import ScrolledPanel
 from urllib.request import urlopen
 import pyttsx3
 import speech_recognition as sr
@@ -55,15 +56,16 @@ class EmojiComposeTab(wx.Panel):
         self.top_buttons_sizer.Add(self.tts_button, 1, wx.ALIGN_CENTER)
         self.top_buttons_sizer.Add(self.stt_button, 1, wx.ALIGN_CENTER)
 
-        self.emojis_intext_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.emojis_intext_panel = EmojisTextMiningPanel(self)
 
         self.editor_emojis_sizer = wx.FlexGridSizer(1, 2, 0, 0)
-        self.editor_emojis_sizer.AddGrowableCol(0)
+        self.editor_emojis_sizer.AddGrowableCol(0, proportion=4)
+        self.editor_emojis_sizer.AddGrowableCol(1, proportion=1)
         self.editor_emojis_sizer.AddGrowableRow(0)
         self.editor = wx.TextCtrl(self, style=wx.TE_MULTILINE)
         self.editor.SetValue(saved_text)
         self.editor_emojis_sizer.Add(self.editor, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
-        self.editor_emojis_sizer.Add(self.emojis_intext_sizer, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
+        self.editor_emojis_sizer.Add(self.emojis_intext_panel, 1, wx.EXPAND|wx.TOP|wx.BOTTOM|wx.LEFT|wx.RIGHT, 5)
 
         self.emojis_tab = EmojiDBTab(self, composer=True)
 
@@ -130,7 +132,6 @@ class EmojiComposeTab(wx.Panel):
         self.editor.Bind(wx.EVT_TEXT, self.OnInputChanged)
 
         self.emojis_in_input = set()
-        self.emoji_images_ui = dict()
         self.emoji_sentiment_ratings = None
 
         self.SetSizer(self.compose_tab_sizer)
@@ -236,26 +237,13 @@ class EmojiComposeTab(wx.Panel):
         self.saved_texts_options.Dismiss()
         self.Layout()
 
-    def OnClickTextMining(self, event):
-        emoji = self.emoji_images_ui[event.GetEventObject()]
-        TextMiningPanel(self, emoji).Show()
-
     def update_current_emojis(self):
-        for emoji in self.emoji_images_ui.keys():
-            emoji.Destroy()
-
-        self.emoji_images_ui = dict()
-
-        for emoji in self.emojis_in_input:
-            init_emoji = wx.Image(unicode_to_filename(emoji, 32))
-            emoji_bmp = EmojiBitmap(
-                wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
-                UNICODE_EMOJI[emoji],
-                composer=False, parent=self)
-            self.emojis_intext_sizer.Add(emoji_bmp.bitmap, 1, wx.ALIGN_CENTER)
-            self.emoji_images_ui[emoji_bmp.bitmap] = emoji
-            emoji_bmp.bitmap.SetCursor(wx.Cursor(wx.CURSOR_HAND))
-            emoji_bmp.bitmap.Bind(wx.EVT_LEFT_UP, self.OnClickTextMining)
+        self.emojis_intext_panel.Destroy()
+        self.emojis_intext_panel = EmojisTextMiningPanel(self, emojis=self.emojis_in_input)
+        self.editor_emojis_sizer.Add(self.emojis_intext_panel, 1,
+                                     wx.EXPAND | wx.TOP | wx.BOTTOM | wx.LEFT | wx.RIGHT,
+                                     5)
+        self.Layout()
 
     def update_used_emojis_from_message(self, text):
         self.user_profile.used_emojis.update(get_emojis_from_text(text))
@@ -321,7 +309,39 @@ def internet_on():
     except:
         return False
 
-class TextMiningPanel(wx.Frame):
+class EmojisTextMiningPanel(ScrolledPanel):
+    def __init__(self, parent, emojis=[]):
+        ScrolledPanel.__init__(self, parent)
+        self.parent = parent
+        self.sizer = wx.GridSizer(0, 0, 0, 0)
+        self.sizer.SetCols(2)
+        self.sizer.SetRows(len(emojis) / 2 + 1)
+        self.SetSizer(self.sizer)
+
+        self.emoji_images_ui = dict()
+        self.populate_with_emojis(emojis)
+
+        self.SetupScrolling(scroll_y=True)
+        self.Layout()
+
+    def OnClickTextMining(self, event):
+        emoji = self.emoji_images_ui[event.GetEventObject()]
+        TextMiningInfoPanel(self.parent, emoji).Show()
+
+    def populate_with_emojis(self, emojis):
+        for emoji in emojis:
+            init_emoji = wx.Image(unicode_to_filename(emoji, 32))
+            emoji_bmp = EmojiBitmap(
+                wx.StaticBitmap(self, -1, wx.Bitmap(init_emoji)),
+                UNICODE_EMOJI[emoji],
+                composer=False, parent=self)
+            self.sizer.Add(emoji_bmp.bitmap, 1, wx.EXPAND | wx.TOP | wx.BOTTOM | wx.LEFT | wx.RIGHT, 5)
+            self.emoji_images_ui[emoji_bmp.bitmap] = emoji
+            emoji_bmp.bitmap.SetCursor(wx.Cursor(wx.CURSOR_HAND))
+            emoji_bmp.bitmap.Bind(wx.EVT_LEFT_UP, self.OnClickTextMining)
+
+
+class TextMiningInfoPanel(wx.Frame):
     def __init__(self, parent, emoji=None):
         wx.Frame.__init__(self, parent, title="Text Mining For " + UNICODE_EMOJI[emoji])
         self.SetBackgroundColour(parent.GetBackgroundColour())
