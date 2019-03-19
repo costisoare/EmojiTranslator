@@ -3977,6 +3977,7 @@ def unicode_to_filename(unicode, emoji_size, version="4.5"):
     else:
         return "FILE NOT FOUND"
 
+# this method returns demojized text, but without "_" and delimiters, eg ":thumbs_up:" becomes "thumbs up"
 def tts_friendly_descriptions(text):
     emoji_descs = regex.findall(
         u'(%s[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+%s)' % (":", ":"),
