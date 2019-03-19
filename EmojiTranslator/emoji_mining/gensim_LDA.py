@@ -64,5 +64,5 @@ def load_model(dir_name="text_mining_models", file_name="gensim_model"):
         return gensim.models.ldamodel.LdaModel.load(path)
     else:
         model = create_model()
-        save_model(model, file_name="gensimLDA")
+        save_model(model)
         return model
