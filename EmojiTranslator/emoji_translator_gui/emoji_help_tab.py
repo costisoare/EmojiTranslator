@@ -17,11 +17,16 @@ HELP_STRINGS = dict({
     * The translation "cheat" works here, as well.
     * There is also an auto-complete option that gets activated when you start typing an emoji description. E.g. when you type ":ca", there will be auto-complete options, such as cat or car.
             """,
-    "Miscellaneous" : """
+    "Text Mining on Emojis" : """
+    * In the Composer panel you can click on the input emojis at the right of the editor. A new panel will open which contains: 
+        - Emoji Polarity -  how positive/negative an emoji is in the context of the message. The value ranges from -1 (very negative) to 1 (very positive).
+        - The perceived dominant topic(s) - the training was not done for a specific topic, but for a wider range of topics, so confidence is relatively low. It should only be taken as guidance.
+            """,
+    "Miscellaneous": """
     * Every emoji image (not inside the text fields) has 2 right click options: 
-        - Copy Emoji - this enables the user to copy the emoji in any message composer, such as Twitter, Facebook etc.
-        - Show Description - this opens a tooltip with the official text description and with the real size emoji.
-            """
+    - Copy Emoji - this enables the user to copy the emoji in any message composer, such as Twitter, Facebook etc.
+    - Show Description - this opens a tooltip with the official text description and with the real size emoji.
+        """
 })
 
 class EmojiHelpTab(ScrolledPanel):

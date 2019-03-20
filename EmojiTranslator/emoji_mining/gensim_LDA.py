@@ -59,7 +59,7 @@ TOPIC_LABELS_GENSIM = {
     49 : "Religion - Christianity",
 }
 
-def predict_topic_gensim(text, model):
+def predict_topic_gensim(text, model, best_k=2):
     words = gensim.utils.simple_preprocess(str(text), deacc=True)
     stop_words = stopwords.words('english')
     lemmatizer = WordNetLemmatizer()
@@ -73,9 +73,8 @@ def predict_topic_gensim(text, model):
 
     unseen_doc = corpus[0]
     vector = sorted(model[unseen_doc], key=lambda x: x[1], reverse=True)
-    for topic in model.show_topics(50, 10):
-        print(topic)
-    return [(TOPIC_LABELS_GENSIM[topic[0]], topic[1]) for topic in vector]
+
+    return [(TOPIC_LABELS_GENSIM[topic[0]], topic[1]) for topic in vector][:best_k]
 
 def create_model_gensim():
     stop_words = stopwords.words('english')
