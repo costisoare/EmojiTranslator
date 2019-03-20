@@ -6,7 +6,7 @@ import os
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-def predict_topic(text, model):
+def predict_topic_gensim(text, model):
     words = gensim.utils.simple_preprocess(str(text), deacc=True)
 
     stop_words = stopwords.words('english')
@@ -24,7 +24,7 @@ def predict_topic(text, model):
     vector = sorted(model[unseen_doc], key=lambda x: x[1], reverse=True)
     return vector
 
-def create_model(data="20newsgroups"):
+def create_model_gensim(data="20newsgroups"):
     stop_words = stopwords.words('english')
     stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
 
@@ -53,16 +53,18 @@ def create_model(data="20newsgroups"):
 
     return gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=20)
 
-def save_model(model, dir_name="text_mining_models", file_name="gensim_model"):
+def save_model_gensim(model, dir_name="text_mining_models", file_name="gensim_model"):
     if not os.path.exists(os.path.join(os.getcwd(), "..", dir_name)):
         os.makedirs(os.path.join(os.getcwd(), "..", dir_name))
     model.save(os.path.join(os.getcwd(), "..", dir_name, file_name))
 
-def load_model(dir_name="text_mining_models", file_name="gensim_model"):
+def load_model_gensim(dir_name="text_mining_models", file_name="gensim_model"):
     path = os.path.join(os.getcwd(), "..", dir_name, file_name)
     if os.path.isfile(path):
         return gensim.models.ldamodel.LdaModel.load(path)
     else:
-        model = create_model()
-        save_model(model)
+        model = create_model_gensim()
+        save_model_gensim(model)
         return model
+
+#model = load_model_gensim()
