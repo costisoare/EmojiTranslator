@@ -5,7 +5,7 @@ from sklearn.decomposition import LatentDirichletAllocation
 import numpy
 
 # manually labelled topics
-TOPIC_LABELS = {
+TOPIC_LABELS_SK = {
     0 : "Sport",
     1 : "Film / Theatre",
     2 : "Education",
@@ -66,7 +66,7 @@ class ModelVectorizer(object):
 def predict_topic_sk(text, model, best_k=2):
     tf = model.vectorizer.transform([text])
     topic_probability_scores = model.lda_model.transform(tf).tolist()[0]
-    topic_probability_scores = [round(t, 3) for t in topic_probability_scores]
+    topic_probability_scores = [t for t in topic_probability_scores]
 
     best_k_topics = sorted(range(len(topic_probability_scores)), key=lambda i: topic_probability_scores[i])[-best_k:]
     best_k_topics.reverse()
@@ -76,10 +76,10 @@ def predict_topic_sk(text, model, best_k=2):
 
     for topic, comp in enumerate(model.lda_model.components_):
         word_idx = numpy.argsort(comp)[::-1][:15]
-
         # store the words most relevant to the topic
         topic_words[topic] = [vocab[i] for i in word_idx]
-    return [(TOPIC_LABELS[topic], topic_probability_scores[topic]) for topic in best_k_topics]
+
+    return [(TOPIC_LABELS_SK[topic], topic_probability_scores[topic]) for topic in best_k_topics]
 
 def create_model_sk():
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000,

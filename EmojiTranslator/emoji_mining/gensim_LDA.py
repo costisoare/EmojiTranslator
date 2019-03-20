@@ -6,10 +6,62 @@ import pickle
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
+TOPIC_LABELS_GENSIM = {
+    0 : "Sport",
+    1 : "Film / Theatre",
+    2 : "Education",
+    3 : "Government - Living",
+    4 : "China",
+    5 : "Geography - General",
+    6 : "Transport - Cars / Aircrafts",
+    7 : "Lifestyle",
+    8 : "TV/Radio Shows - America",
+    9 : "Literature",
+    10 : "California/  USA",
+    11 : "London / UK",
+    12 : "Music",
+    13 : "New York Sports",
+    14 : "Law / Politics",
+    15 : "Ancient History / Greece",
+    16 : "Baseball / USA",
+    17 : "Olympic Games",
+    18 : "France - Geography",
+    19 : "Media / Gossip",
+    20 : "Energy - Gas / Electricity",
+    21 : "Weather - Economic Damage",
+    22 : "Science - Research",
+    23 : "England",
+    24 : "Ocean Fish Trade",
+    25 : "Books",
+    26 : "Religion - Catholic Church",
+    27 : "British History",
+    28 : "War",
+    29 : "Animals / Plants",
+    30 : "USA - Geography",
+    31 : "Hockey / Video Games",
+    32 : "Movie Awards",
+    33 : "Politics",
+    34 : "Buildings",
+    35 : "Basketball / American Sports",
+    36 : "Russia - Geography",
+    37 : "Wrestling",
+    38 : "President - Politics",
+    39 : "Wikipedia",
+    40 : "Biology",
+    41 : "Spain - History",
+    42 : "Weather",
+    43 : "Life Events",
+    44 : "Computers",
+    45 : "Languages",
+    46 : "Astronomy",
+    47 : "Transport / Railway",
+    48 : "Art",
+    49 : "Canada - Geography",
+}
+
 def predict_topic_gensim(text, model):
     words = gensim.utils.simple_preprocess(str(text), deacc=True)
     stop_words = stopwords.words('english')
-    stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
     lemmatizer = WordNetLemmatizer()
 
     data_lemmatized = list()
@@ -21,7 +73,9 @@ def predict_topic_gensim(text, model):
 
     unseen_doc = corpus[0]
     vector = sorted(model[unseen_doc], key=lambda x: x[1], reverse=True)
-    return vector
+    for topic in model.show_topics(50, 10):
+        print(topic)
+    return [(TOPIC_LABELS_GENSIM[topic[0]], topic[1]) for topic in vector]
 
 def create_model_gensim():
     stop_words = stopwords.words('english')
@@ -65,4 +119,5 @@ def load_model_gensim(dir_name="text_mining_models", file_name="gensim_model"):
         save_model_gensim(model)
         return model
 
-#model = load_model_gensim()
+model = load_model_gensim()
+predict_topic_gensim("religion", model)

@@ -382,7 +382,7 @@ class TextMiningInfoPanel(wx.Frame):
         self.sizer.Add(topic_label, 1, wx.ALIGN_CENTER)
         topics_in = 0
         for topic in topics:
-            percentage = topic[1] * 100
+            percentage = round(topic[1] * 100, 3)
             if percentage >= 10:
                 topic_value = wx.StaticText(self,
                                             label=topic[0]
