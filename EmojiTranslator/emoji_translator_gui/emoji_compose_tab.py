@@ -358,7 +358,7 @@ class TextMiningInfoPanel(wx.Frame):
         u_font = self.GetFont()
         u_font.SetUnderlined(True)
 
-        self.SetSize((450, 400))
+        self.SetSize((600, 400))
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         init_emoji = wx.Image(unicode_to_filename(emoji, 64))
         emoji_bmp = EmojiBitmap(
