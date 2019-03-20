@@ -1,7 +1,6 @@
 import os
 import pickle
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.datasets import fetch_20newsgroups
 from sklearn.decomposition import LatentDirichletAllocation
 import numpy
 
@@ -25,15 +24,14 @@ def predict_topic_sk(text, model):
         topic_words[topic] = [vocab[i] for i in word_idx]
     return topic_words[best_topic]
 
-def create_model_sk(data="20newsgroups"):
+def create_model_sk():
     tf_vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000,
                                     stop_words='english')
-    dataset = fetch_20newsgroups(shuffle=True, random_state=1, remove=('headers', 'footers', 'quotes'))
-    documents = dataset.data
+    path = os.path.join(os.getcwd(), "../data", "docs_wiki.pkl")
+    f = open(path, 'rb')
+    documents = pickle.load(f)
     tf = tf_vectorizer.fit_transform(documents)
-
-    no_topics = 20
-    lda = LatentDirichletAllocation(n_topics=no_topics, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(tf)
+    lda = LatentDirichletAllocation(n_topics=50, max_iter=5, learning_method='online', learning_offset=50.,random_state=0).fit(tf)
     return ModelVectorizer(lda, tf_vectorizer)
 
 def save_model_sk(model, dir_name="text_mining_models", file_name="sklearn_model.pickle"):
@@ -48,7 +46,7 @@ def load_model_sk(dir_name="text_mining_models", file_name="sklearn_model.pickle
         with open(path, "rb") as f:
             return pickle.load(f)
     else:
-        model = create_model_sk("20newsgroups")
+        model = create_model_sk()
         save_model_sk(model)
         return model
 

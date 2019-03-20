@@ -1,14 +1,13 @@
 import gensim
 import gensim.corpora as corpora
-import pandas
 import re
 import os
+import pickle
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
 def predict_topic_gensim(text, model):
     words = gensim.utils.simple_preprocess(str(text), deacc=True)
-
     stop_words = stopwords.words('english')
     stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
     lemmatizer = WordNetLemmatizer()
@@ -24,14 +23,14 @@ def predict_topic_gensim(text, model):
     vector = sorted(model[unseen_doc], key=lambda x: x[1], reverse=True)
     return vector
 
-def create_model_gensim(data="20newsgroups"):
+def create_model_gensim():
     stop_words = stopwords.words('english')
     stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
 
-    df = pandas.read_json('https://raw.githubusercontent.com/selva86/datasets/master/newsgroups.json')
+    path = os.path.join(os.getcwd(), "../data", "docs_wiki.pkl")
+    f = open(path, 'rb')
+    data = pickle.load(f)
 
-    # Convert to list
-    data = df.content.values.tolist()
     # Remove Emails
     data = [re.sub('\S*@\S*\s?', '', sent) for sent in data]
     # Remove new line characters
@@ -50,8 +49,7 @@ def create_model_gensim(data="20newsgroups"):
     id2word = corpora.Dictionary(data_lemmatized)
     texts = data_lemmatized
     corpus = [id2word.doc2bow(text) for text in texts]
-
-    return gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=20)
+    return gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=50)
 
 def save_model_gensim(model, dir_name="text_mining_models", file_name="gensim_model"):
     if not os.path.exists(os.path.join(os.getcwd(), "..", dir_name)):
