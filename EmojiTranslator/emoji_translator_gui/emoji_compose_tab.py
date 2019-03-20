@@ -332,9 +332,9 @@ class EmojisTextMiningPanel(ScrolledPanel):
 
     def OnClickTextMining(self, event):
         text = tts_friendly_descriptions(self.parent.editor.GetValue())
-        print(predict_topic_sk(text, self.parent.ml_model))
+        topics = predict_topic_sk(text, self.parent.ml_model)
         emoji = self.emoji_images_ui[event.GetEventObject()]
-        TextMiningInfoPanel(self.parent, emoji).Show()
+        TextMiningInfoPanel(self.parent, emoji, topics).Show()
 
     def populate_with_emojis(self, emojis):
         for emoji in emojis:
@@ -349,7 +349,7 @@ class EmojisTextMiningPanel(ScrolledPanel):
             emoji_bmp.bitmap.Bind(wx.EVT_LEFT_UP, self.OnClickTextMining)
 
 class TextMiningInfoPanel(wx.Frame):
-    def __init__(self, parent, emoji=None):
+    def __init__(self, parent, emoji=None, topics=None):
         wx.Frame.__init__(self, parent, title="Text Mining For " + UNICODE_EMOJI[emoji])
         self.SetBackgroundColour(parent.GetBackgroundColour())
         self.SetFont(parent.GetFont())
@@ -358,7 +358,7 @@ class TextMiningInfoPanel(wx.Frame):
         u_font = self.GetFont()
         u_font.SetUnderlined(True)
 
-        self.SetSize((400, 400))
+        self.SetSize((450, 400))
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         init_emoji = wx.Image(unicode_to_filename(emoji, 64))
         emoji_bmp = EmojiBitmap(
@@ -376,5 +376,22 @@ class TextMiningInfoPanel(wx.Frame):
                                               + ", "
                                               + str(self.emoji_sentiment_ratings[emoji][1]))
         self.sizer.Add(sentiment_value, 1, wx.ALIGN_CENTER)
+
+        topic_label = wx.StaticText(self, label="Possible Related Topic(s):")
+        topic_label.SetFont(u_font)
+        self.sizer.Add(topic_label, 1, wx.ALIGN_CENTER)
+        topics_in = 0
+        for topic in topics:
+            percentage = topic[1] * 100
+            if percentage >= 10:
+                topic_value = wx.StaticText(self,
+                                            label=topic[0]
+                                                  + ", Confidence = "
+                                                  + str(percentage)
+                                                  + "%")
+                self.sizer.Add(topic_value, 1, wx.ALIGN_CENTER)
+                topics_in += 1
+        if topics_in == 0:
+            self.sizer.Add(wx.StaticText(self, label="No trained topics found."), 1, wx.ALIGN_CENTER)
 
         self.SetSizer(self.sizer)

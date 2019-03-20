@@ -35,7 +35,7 @@ TOPIC_LABELS = {
     26 : "Religion - Catholic Church",
     27 : "British History",
     28 : "War",
-    29 : "Animals & Plants",
+    29 : "Animals / Plants",
     30 : "USA - Geography",
     31 : "Hockey / Video Games",
     32 : "Movie Awards",
