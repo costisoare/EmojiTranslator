@@ -7,6 +7,7 @@ from emoji_translator_gui.emoji_settings_tab import EmojiSettingsTab
 from emoji_translator_gui.emoji_help_tab import *
 from emoji_translator_utils.enums import *
 from user_settings.user_profile import *
+from emoji_mining.sklearn_LDA import ModelVectorizer
 
 class MainWindow(wx.Frame):
     def __init__(self, username="guest"):

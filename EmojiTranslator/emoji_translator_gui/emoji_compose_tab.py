@@ -4,6 +4,8 @@ from urllib.request import urlopen
 import pyttsx3
 import speech_recognition as sr
 import threading
+from emoji_mining.sklearn_LDA import *
+from emoji_mining.gensim_LDA import *
 from emoji_translator_gui.emoji_db_tab import EmojiDBTab
 from emoji_translator_utils.emoji_dict_utils import *
 from emoji_translator_gui.emoji_search_tab import get_matched_list
@@ -13,6 +15,7 @@ from emoji_mining.sentiment_analysis import *
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
+        self.ml_model = load_model_sk()
         self.parent = parent
         self.user_settings = self.parent.user_settings
         if self.user_settings.get_is_general_font_size_enabled():
@@ -328,6 +331,8 @@ class EmojisTextMiningPanel(ScrolledPanel):
         self.Layout()
 
     def OnClickTextMining(self, event):
+        text = tts_friendly_descriptions(self.parent.editor.GetValue())
+        print(predict_topic_sk(text, self.parent.ml_model))
         emoji = self.emoji_images_ui[event.GetEventObject()]
         TextMiningInfoPanel(self.parent, emoji).Show()
 
@@ -343,13 +348,11 @@ class EmojisTextMiningPanel(ScrolledPanel):
             emoji_bmp.bitmap.SetCursor(wx.Cursor(wx.CURSOR_HAND))
             emoji_bmp.bitmap.Bind(wx.EVT_LEFT_UP, self.OnClickTextMining)
 
-
 class TextMiningInfoPanel(wx.Frame):
     def __init__(self, parent, emoji=None):
         wx.Frame.__init__(self, parent, title="Text Mining For " + UNICODE_EMOJI[emoji])
         self.SetBackgroundColour(parent.GetBackgroundColour())
         self.SetFont(parent.GetFont())
-
         self.emoji_sentiment_ratings = parent.emoji_sentiment_ratings
 
         u_font = self.GetFont()
