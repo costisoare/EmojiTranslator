@@ -5,7 +5,7 @@ from sklearn.decomposition import LatentDirichletAllocation
 from emoji_mining.base_LDA import BaseLDA
 import numpy
 
-# manually labelled topics
+# manually labelled topics from the trained unsupervised LDA model
 TOPIC_LABELS_SK = {
     0 : "Sports",
     1 : "Film / Theatre",

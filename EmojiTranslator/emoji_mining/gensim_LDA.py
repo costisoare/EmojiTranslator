@@ -9,6 +9,7 @@ from nltk.stem import WordNetLemmatizer
 from emoji_mining.base_LDA import BaseLDA
 from gensim.models.ldamodel import LdaModel
 
+# manually labelled topics from the trained unsupervised LDA model
 TOPIC_LABELS_GENSIM = {
     0 : "Weather - Extreme / Ocean",
     1 : "France - Geography",
