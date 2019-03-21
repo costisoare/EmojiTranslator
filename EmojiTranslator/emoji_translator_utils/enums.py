@@ -13,15 +13,15 @@ class TranslationDirection(enum.Enum):
     FROM_EMOJI_TO_TEXT = 1
 
 class SettingsEnum(enum.Enum):
-    DB_EMOJI_SIZE = "db_emoji_size"
-    COMPOSER_EMOJI_SIZE = "composer_emoji_size"
-    SEARCH_TAB_FONT_SIZE = "search_tab_font_size"
-    TRANSLATION_TAB_FONT_SIZE = "translation_tab_font_size"
-    COMPOSER_TAB_FONT_SIZE = "composer_tab_font_size"
-    TTS_SPEED = "tts_speed"
-    BACKGROUND_COLOR = "background_color"
-    GENERAL_FONT_SIZE = "general_font_size"
-    GENERAL_FONT_SIZE_ENABLED = "general_font_size_enabled"
+    DB_EMOJI_SIZE = "DB Emoji Size"
+    COMPOSER_EMOJI_SIZE = "Composer Emoji Size"
+    SEARCH_TAB_FONT_SIZE = "Search Tab Font Size"
+    TRANSLATION_TAB_FONT_SIZE = "Translation Tab Font Size"
+    COMPOSER_TAB_FONT_SIZE = "Composer Tab Font Size"
+    TTS_SPEED = "TTS Speed"
+    BACKGROUND_COLOR = "Background Color"
+    GENERAL_FONT_SIZE = "General Font Size"
+    GENERAL_FONT_SIZE_ENABLED = "General Font Size Enabled"
 
 class Sentiment(enum.Enum):
     VERY_POSITIVE = "very positive"
