@@ -37,9 +37,11 @@ class EmojiSettingsTab(ScrolledPanel):
                 value_gui = wx.ColourPickerCtrl(self, colour=self.user_settings.get_background_color())
             elif setting == SettingsEnum.GENERAL_FONT_SIZE:
                 value_gui = wx.ComboBox(self, choices=list(map(str, range(6, 41))))
-            else:
+            elif setting == SettingsEnum.GENERAL_FONT_SIZE_ENABLED:
                 value_gui = wx.CheckBox(self)
                 value_gui.SetValue(self.user_settings.get_is_general_font_size_enabled())
+            elif setting == SettingsEnum.TEXT_MINING_MODEL:
+                value_gui = wx.ComboBox(self, choices=list(["sklearn", "gensim"]))
 
             self.settings_value_gui_dict[setting] = value_gui
             self.gen_set_sizer.Add(value_gui, 0, wx.ALL, 5)
@@ -132,7 +134,7 @@ class EmojiSettingsTab(ScrolledPanel):
             if type(self.settings_value_gui_dict[setting]) is wx.ComboBox:
                 current_selection = self.settings_value_gui_dict[setting].GetStringSelection()
                 if current_selection != "":
-                    if setting != SettingsEnum.TTS_SPEED:
+                    if setting not in [SettingsEnum.TTS_SPEED, SettingsEnum.TEXT_MINING_MODEL]:
                         self.user_settings.settings_dict[setting] = int(current_selection)
                     else:
                         self.user_settings.settings_dict[setting] = current_selection

@@ -15,9 +15,13 @@ from emoji_mining.sentiment_analysis import *
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
-        self.ml_model = SKLearnLDA()
         self.parent = parent
         self.user_settings = self.parent.user_settings
+        if self.user_settings.get_text_mining_model() == "sklearn":
+            self.ml_model = SKLearnLDA()
+        else:
+            self.ml_model = GensimLDA()
+
         if self.user_settings.get_is_general_font_size_enabled():
             font_size = self.user_settings.get_general_font_size()
         else:

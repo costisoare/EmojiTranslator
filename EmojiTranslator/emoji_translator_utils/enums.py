@@ -22,6 +22,7 @@ class SettingsEnum(enum.Enum):
     BACKGROUND_COLOR = "Background Color"
     GENERAL_FONT_SIZE = "General Font Size"
     GENERAL_FONT_SIZE_ENABLED = "General Font Size Enabled"
+    TEXT_MINING_MODEL = "Text Mining Model"
 
 class Sentiment(enum.Enum):
     VERY_POSITIVE = "very positive"

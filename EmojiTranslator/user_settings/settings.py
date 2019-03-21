@@ -43,6 +43,9 @@ class Settings(object):
     def get_is_general_font_size_enabled(self):
         return self.settings_dict.get(SettingsEnum.GENERAL_FONT_SIZE_ENABLED)
 
+    def get_text_mining_model(self):
+        return self.settings_dict.get(SettingsEnum.TEXT_MINING_MODEL)
+
     def get_tts_speed(self):
         speed_str = self.settings_dict.get(SettingsEnum.TTS_SPEED)
         if speed_str == "slow":

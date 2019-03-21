@@ -9,14 +9,16 @@ SETTINGS = dict({
     SettingsEnum.TTS_SPEED : 120,
     SettingsEnum.BACKGROUND_COLOR : (255, 253, 208),
     SettingsEnum.GENERAL_FONT_SIZE : 15,
-    SettingsEnum.GENERAL_FONT_SIZE_ENABLED : False
+    SettingsEnum.GENERAL_FONT_SIZE_ENABLED : False,
+    SettingsEnum.TEXT_MINING_MODEL: "sklearn"
 })
 
 GENERAL_SETTINGS = list([
     SettingsEnum.GENERAL_FONT_SIZE,
     SettingsEnum.GENERAL_FONT_SIZE_ENABLED,
     SettingsEnum.TTS_SPEED,
-    SettingsEnum.BACKGROUND_COLOR
+    SettingsEnum.BACKGROUND_COLOR,
+    SettingsEnum.TEXT_MINING_MODEL
 ])
 
 SEARCH_SETTINGS = list([
