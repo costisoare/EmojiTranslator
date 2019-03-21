@@ -5,7 +5,6 @@ from sklearn.decomposition import LatentDirichletAllocation
 from emoji_mining.base_LDA import BaseLDA
 import numpy
 
-
 # manually labelled topics
 TOPIC_LABELS_SK = {
     0 : "Sports",
