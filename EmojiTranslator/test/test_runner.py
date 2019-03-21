@@ -4,7 +4,8 @@ testmodules = [
     'test_dict_utils',
     'test_search',
     'test_user_profile_actions',
-    'test_sentiment_analysis'
+    'test_sentiment_analysis',
+    'test_emoji_categ_parser'
 ]
 
 suite = unittest.TestSuite()
