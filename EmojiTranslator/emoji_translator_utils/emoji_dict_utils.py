@@ -3984,8 +3984,9 @@ def tts_friendly_descriptions(text):
         demojize(text))
     to_speak = demojize(text)
     for desc in emoji_descs:
-        new_desc = desc.replace(":", " ").replace("_", " ")
-        to_speak = to_speak.replace(desc, new_desc)
+        if desc != emojize(desc):
+            new_desc = desc.replace(":", " ").replace("_", " ")
+            to_speak = to_speak.replace(desc, new_desc)
 
     return to_speak
 

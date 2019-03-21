@@ -28,5 +28,14 @@ class TestDictUtils(unittest.TestCase):
     def test_unicode_for_inexistent_file(self):
         self.assertEqual("FILE NOT FOUND", unicode_to_filename(u'\U00011111', 32))
 
+    def test_emojis_in_message(self):
+        self.assertEqual([], get_emojis_from_text("cat"))
+        self.assertEqual(["🐱", "🇪🇸"], get_emojis_from_text("🐱 🇪🇸"))
+
+    def test_tts_friendly_description(self):
+        self.assertEqual("cat", tts_friendly_descriptions("cat"))
+        self.assertEqual(" cat ", tts_friendly_descriptions(":cat:"))
+        self.assertEqual(" cat face   Spain ", tts_friendly_descriptions("🐱 🇪🇸"))
+
 if __name__ == '__main__':
     unittest.main()
