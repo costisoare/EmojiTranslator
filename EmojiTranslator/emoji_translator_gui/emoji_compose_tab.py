@@ -15,7 +15,7 @@ from emoji_mining.sentiment_analysis import *
 class EmojiComposeTab(wx.Panel):
     def __init__(self, parent, saved_text=""):
         wx.Panel.__init__(self, parent)
-        self.ml_model = load_model_sk()
+        self.ml_model = SKLearnLDA()
         self.parent = parent
         self.user_settings = self.parent.user_settings
         if self.user_settings.get_is_general_font_size_enabled():
@@ -332,7 +332,7 @@ class EmojisTextMiningPanel(ScrolledPanel):
 
     def OnClickTextMining(self, event):
         text = tts_friendly_descriptions(self.parent.editor.GetValue())
-        topics = predict_topic_sk(text, self.parent.ml_model)
+        topics = self.parent.ml_model.predict_topic(text)
         emoji = self.emoji_images_ui[event.GetEventObject()]
         TextMiningInfoPanel(self.parent, emoji, topics).Show()
 

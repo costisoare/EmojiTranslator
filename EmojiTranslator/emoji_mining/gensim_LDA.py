@@ -1,10 +1,13 @@
 import gensim
 import gensim.corpora as corpora
+import gensim.utils as utils
 import re
 import os
 import pickle
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from emoji_mining.base_LDA import BaseLDA
+from gensim.models.ldamodel import LdaModel
 
 TOPIC_LABELS_GENSIM = {
     0 : "Weather - Extreme / Ocean",
@@ -59,63 +62,66 @@ TOPIC_LABELS_GENSIM = {
     49 : "Religion - Christianity",
 }
 
-def predict_topic_gensim(text, model, best_k=2):
-    words = gensim.utils.simple_preprocess(str(text), deacc=True)
-    stop_words = stopwords.words('english')
-    lemmatizer = WordNetLemmatizer()
+class GensimLDA(BaseLDA):
+    def __init__(self):
+        super().__init__()
+        self.model = self.load_model()
 
-    data_lemmatized = list()
+    def predict_topic(self, text, best_k=2):
+        words = utils.simple_preprocess(str(text), deacc=True)
+        stop_words = stopwords.words('english')
+        lemmatizer = WordNetLemmatizer()
 
-    data_lemmatized.append([lemmatizer.lemmatize(w) for w in words if w not in stop_words])
-    id2word = corpora.Dictionary(data_lemmatized)
-    texts = data_lemmatized
-    corpus = [id2word.doc2bow(text) for text in texts]
+        data_lemmatized = list()
 
-    unseen_doc = corpus[0]
-    vector = sorted(model[unseen_doc], key=lambda x: x[1], reverse=True)
+        data_lemmatized.append([lemmatizer.lemmatize(w) for w in words if w not in stop_words])
+        id2word = corpora.Dictionary(data_lemmatized)
+        texts = data_lemmatized
+        corpus = [id2word.doc2bow(text) for text in texts]
 
-    return [(TOPIC_LABELS_GENSIM[topic[0]], topic[1]) for topic in vector][:best_k]
+        unseen_doc = corpus[0]
+        vector = sorted(self.model[unseen_doc], key=lambda x: x[1], reverse=True)
 
-def create_model_gensim():
-    stop_words = stopwords.words('english')
-    stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
+        return [(TOPIC_LABELS_GENSIM[topic[0]], topic[1]) for topic in vector][:best_k]
 
-    path = os.path.join(os.getcwd(), "../data", "docs_wiki.pkl")
-    f = open(path, 'rb')
-    data = pickle.load(f)
+    def create_model(self):
+        stop_words = stopwords.words('english')
+        stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
 
-    # Remove Emails
-    data = [re.sub('\S*@\S*\s?', '', sent) for sent in data]
-    # Remove new line characters
-    data = [re.sub('\s+', ' ', sent) for sent in data]
-    # Remove distracting single quotes
-    data = [re.sub("\'", "", sent) for sent in data]
+        path = os.path.join(os.getcwd(), "../data", "docs_wiki.pkl")
+        f = open(path, 'rb')
+        data = pickle.load(f)
 
-    words = list()
-    for sentence in data:
-        words.append(gensim.utils.simple_preprocess(str(sentence), deacc=True))
-    data_words = list(words)
+        # Remove Emails
+        data = [re.sub('\S*@\S*\s?', '', sent) for sent in data]
+        # Remove new line characters
+        data = [re.sub('\s+', ' ', sent) for sent in data]
+        # Remove distracting single quotes
+        data = [re.sub("\'", "", sent) for sent in data]
 
-    lemmatizer = WordNetLemmatizer()
-    data_lemmatized = [[lemmatizer.lemmatize(w) for w in sent if w not in stop_words] for sent in data_words]
+        words = list()
+        for sentence in data:
+            words.append(gensim.utils.simple_preprocess(str(sentence), deacc=True))
+        data_words = list(words)
 
-    id2word = corpora.Dictionary(data_lemmatized)
-    texts = data_lemmatized
-    corpus = [id2word.doc2bow(text) for text in texts]
-    return gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=50)
+        lemmatizer = WordNetLemmatizer()
+        data_lemmatized = [[lemmatizer.lemmatize(w) for w in sent if w not in stop_words] for sent in data_words]
 
-def save_model_gensim(model, dir_name="text_mining_models", file_name="gensim_model"):
-    if not os.path.exists(os.path.join(os.getcwd(), "..", dir_name)):
-        os.makedirs(os.path.join(os.getcwd(), "..", dir_name))
-    model.save(os.path.join(os.getcwd(), "..", dir_name, file_name))
+        id2word = corpora.Dictionary(data_lemmatized)
+        texts = data_lemmatized
+        corpus = [id2word.doc2bow(text) for text in texts]
+        return gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=id2word, num_topics=50)
 
-def load_model_gensim(dir_name="text_mining_models", file_name="gensim_model"):
-    path = os.path.join(os.getcwd(), "..", dir_name, file_name)
-    if os.path.isfile(path):
-        return gensim.models.ldamodel.LdaModel.load(path)
-    else:
-        model = create_model_gensim()
-        save_model_gensim(model)
-        return model
+    def save_model(self, model, dir_name="text_mining_models", file_name="gensim_model"):
+        if not os.path.exists(os.path.join(os.getcwd(), "..", dir_name)):
+            os.makedirs(os.path.join(os.getcwd(), "..", dir_name))
+        model.save(os.path.join(os.getcwd(), "..", dir_name, file_name))
 
-#model = load_model_gensim()
+    def load_model(self, dir_name="text_mining_models", file_name="gensim_model"):
+        path = os.path.join(os.getcwd(), "..", dir_name, file_name)
+        if os.path.isfile(path):
+            return LdaModel.load(path)
+        else:
+            model = self.create_model()
+            self.save_model()
+            return model
