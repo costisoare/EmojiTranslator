@@ -43,8 +43,6 @@ class EmojiSearchTab(wx.Panel):
 
         self.SetSizer(self.main_sizer)
 
-        self.tts_engine = pyttsx3.init()
-
     def OnInputChanged(self, event):
         matches = [match.replace("_", " ") for match in get_matched_list(self.user_input.GetValue())]
         self.user_input.GetPopupControl().RemoveItems()
@@ -81,9 +79,7 @@ class EmojiSearchTab(wx.Panel):
         self.Layout()
 
     def OnTTS(self, event):
-        self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
-        self.tts_engine.say(self.emoji_symbol.emoji_desc)
-        self.tts_engine.runAndWait()
+        os.system('say ' + self.emoji_symbol.emoji_desc + ' -r ' + str(self.user_settings.get_tts_speed()))
 
 
 def get_matched_list(input_str, cutoff=0.6, emoji_list=EMOJI_DESC_LIST):

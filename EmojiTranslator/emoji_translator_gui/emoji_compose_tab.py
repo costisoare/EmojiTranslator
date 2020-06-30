@@ -143,8 +143,6 @@ class EmojiComposeTab(wx.Panel):
 
         self.SetSizer(self.compose_tab_sizer)
 
-        self.tts_engine = pyttsx3.init()
-
         self.Layout()
 
     def OnComposerClickEmoji(self, event):
@@ -196,9 +194,7 @@ class EmojiComposeTab(wx.Panel):
         self.Layout()
 
     def OnTTS(self, event):
-        self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
-        self.tts_engine.say(tts_friendly_descriptions(self.editor.GetValue()))
-        self.tts_engine.runAndWait()
+        os.system('say ' + tts_friendly_descriptions(self.editor.GetValue()) + ' -r ' + str(self.user_settings.get_tts_speed()))
 
     def OnSTT(self, event):
         self.stt_button.Disable()

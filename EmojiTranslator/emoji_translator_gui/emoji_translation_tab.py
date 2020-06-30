@@ -68,8 +68,6 @@ class EmojiTranslationTab(wx.Panel):
 
         self.SetSizer(self.main_sizer)
 
-        self.tts_engine = pyttsx3.init()
-
     def OnInputChanged(self, event):
         if self.translation_direction == TranslationDirection.FROM_EMOJI_TO_TEXT:
             self.out_text.SetValue(emoji.demojize(self.user_input.GetValue()))
@@ -87,6 +85,4 @@ class EmojiTranslationTab(wx.Panel):
             self.translation_direction = TranslationDirection.FROM_TEXT_TO_EMOJI
 
     def OnTTS(self, event):
-        self.tts_engine.setProperty("rate", self.user_settings.get_tts_speed())
-        self.tts_engine.say(tts_friendly_descriptions(self.out_text.GetValue()))
-        self.tts_engine.runAndWait()
+        os.system('say ' + tts_friendly_descriptions(self.out_text.GetValue()) + ' -r ' + str(self.user_settings.get_tts_speed()))
